@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>MBGL Stock Report — MBGL</title>
+  <style>
+    /* Light (기본) */
+    :root{
+      --bg:#f7f9fc; --fg:#0b1220; --muted:#5b6677; --panel:#ffffff; --line:#e5e7eb;
+      --accent:#2563eb; --ok:#16a34a; --warn:#f59e0b; --risk:#dc2626; --chip:#eef2ff;
+    }
+    /* Dark (토글 시) */
+    [data-theme="dark"]{
+      --bg:#0b0f14; --fg:#e6edf3; --muted:#9aa4b2; --panel:#0f172a; --line:#1f2937;
+      --accent:#60a5fa; --ok:#22c55e; --warn:#f59e0b; --risk:#ef4444; --chip:#0b1220;
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+    [data-theme="dark"] .topbar{background:rgba(11,15,20,.8)}
+    .topbar .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 20px}
+
+    .badge{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700}
+    .spacer{flex:1}
+    .btn{border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+
+    .hdr{display:flex;align-items:flex-end;gap:16px;margin:18px 0 6px}
+    .hdr h1{margin:0;font-size:clamp(18px,4vw,24px)}
+    .muted{color:var(--muted);font-size:12px}
+
+    .nav{display:flex;gap:10px;flex-wrap:nowrap;margin:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap}
+
+    .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+    .kpi .lbl{font-size:12px;color:var(--muted)}
+    .kpi .val{font-weight:800;font-size:clamp(18px,5vw,20px);line-height:1.2;margin:6px 0}
+    .kpi .sub{font-size:12px;color:var(--muted)}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+
+    .sect{margin:24px 0}
+    .sect h3{margin:0 0 10px}
+
+    .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+    .tbl{width:100%;border-collapse:collapse;min-width:720px}
+    .tbl th,.tbl td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+    .tbl th{background:#f3f6fb;color:var(--fg)}
+
+    .chip{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-size:12px}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:12px}
+
+    .small{font-size:12px;color:var(--muted)}
+    /* touch-action: 세로 스크롤은 허용하되 차트 위에서의 핀치 줌만 막는다.
+       (차트는 PNG 라 확대해도 해상도가 늘지 않고, 스크롤 중 오작동만 유발했다) */
+    .chart{border:1px solid var(--line);border-radius:12px;overflow:hidden;
+           touch-action:pan-x pan-y}
+
+    details{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel)}
+    details summary{cursor:pointer;font-weight:600}
+
+    .stat{display:flex;align-items:center;gap:8px}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .risk{color:var(--risk)}
+    .host{display:flex;gap:8px;align-items:center}
+
+    :target{scroll-margin-top:80px;box-shadow:0 0 0 2px var(--accent) inset;border-radius:10px}
+
+    @media (max-width:980px){
+      .grid-kpi{grid-template-columns:1fr}
+      .cards,.grid-3{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+      .tbl{min-width:560px}
+    }
+    /* .protect{
+      /* -webkit-user-drag: none; */
+      /* -webkit-touch-callout: none;  iOS long-press 메뉴 차단 */
+      /* user-select: none;            텍스트 블록 선택 차단 */
+    /* } 
+    /* 코드 블록(원문 JSON) */
+    .code-block{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 420px;         /* 너무 길면 스크롤 */
+      overflow: auto;
+    }
+    /* 필요하면 선택 허용(복사방지 사용 중에도) → 주석 해제 시 적용
+    .protect .code-block{ user-select:text; }
+    */
+
+    /* 이미지 우클릭/드래그 차단 (차트는 예외처리 아래) */
+    /* .protect img{
+      pointer-events: none;
+    } */
+
+    .protect .chart img{
+      pointer-events: auto;   /* 차트 이미지는 터치 허용 */
+    }
+    /* 상호작용/접근성 예외: 링크/버튼/폼/차트는 정상 동작 */
+    .protect a,
+    .protect button,
+    .protect input,
+    .protect select,
+    .protect textarea,
+    .protect .chart,
+    .protect .plotly-graph-div,
+    .protect .plot-container{
+      user-select: auto;
+      pointer-events: auto;
+    }
+    /* 라이트 테마용 타일 */
+    body.watermark{
+      --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%230B1220' fill-opacity='0.06'>치퐁참</text></g></svg>");
+      background-image: var(--wm-img);
+      background-repeat: repeat;
+      background-position: 0 0;
+      background-attachment: fixed;   /* 스크롤해도 고정 */
+    }
+
+    /* 다크 테마일 때는 밝은 색으로 */
+    [data-theme="dark"].watermark{
+      --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%23E6EDF3' fill-opacity='0.08'>치퐁참</text></g></svg>");
+      background-image: var(--wm-img);
+    }
+
+    /* 인쇄 시 너무 진하면 살짝 더 옅게 */
+    @media print{
+      body.watermark{
+        --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%230B1220' fill-opacity='0.04'>치퐁참</text></g></svg>");
+        background-image: var(--wm-img);
+      }
+    }
+    .chart img{
+              width:100%;
+              height:auto;
+              display:block;
+              touch-action:pan-x pan-y;   /* 핀치 줌 차단 (스크롤은 유지) */
+              -webkit-user-select:none; user-select:none;
+              -webkit-touch-callout:none; /* iOS 롱프레스 확대 메뉴 방지 */
+            }
+    /* 인터랙티브 Plotly: 폭은 컨테이너에 맞추고 높이만 지정.
+       모바일은 폭이 좁아 2단(가격+거래량) 서브플롯이 눌리므로 더 높게 준다. */
+    .chart .plotly-graph-div{ width:100% !important; height:480px !important; }
+    @media (max-width:640px){
+      .chart .plotly-graph-div{ height:560px !important; }
+    }
+
+
+    /* ===== Responsive tables: desktop=table, mobile=cards ===== */
+    .tbl.rtable { min-width: 0; }            /* 기본: 좌우 스크롤 제거 */
+    .table-scroll { overflow-x: auto; }      /* 데스크톱 보조 */
+
+    /* 모바일에서 표를 카드로 변환 */
+    @media (max-width: 860px){
+      .tbl.rtable thead { display:none; }
+      .tbl.rtable, .tbl.rtable tbody, .tbl.rtable tr, .tbl.rtable td {
+        display:block; width:100%;
+      }
+      .tbl.rtable tr{
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin: 10px 0;
+        padding: 6px 8px;
+      }
+      .tbl.rtable td{
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 6px;
+      }
+      .tbl.rtable td:last-child{
+        border-bottom: 0;
+      }
+      .tbl.rtable td::before{
+        content: attr(data-label);
+        display:block;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body class="watermark">
+  <!-- Sticky topbar -->
+  <div class="topbar">
+    <div class="inner">
+      <span class="badge">MBGL</span>
+      <strong>MBGL Stock Report</strong>
+      <span class="muted">자동 리포트 · 2026-08-26</span>
+      <div class="spacer"></div>
+      <button class="btn" id="themeBtn">테마 전환</button>
+      <a class="btn" href="#sources">데이터 출처</a>
+    </div>
+  </div>
+
+  <div class="wrap" id="content-root">
+    <div class="hdr">
+      <h1>MBGL</h1>
+      <div class="muted">가격 $20.55 · 시총 6,576,000,000</div>
+    </div>
+
+    <!-- quick nav -->
+    <nav class="nav">
+      <a href="#explain-debate">해설 & 토론</a><!-- 모바일에서 최상단 -->
+      <a href="#kpi">KPI</a>
+      <a href="#chart">차트</a>
+      <a href="#forecast">예상범위</a>
+      <a href="#options">옵션</a>
+      <a href="#short">숏/차입</a>
+      <a href="#news">뉴스</a>
+      <a href="#social">소셜</a>
+      <a href="#congress">의회거래</a>
+      <a href="#agents">에이전트·시나리오</a>
+      <a href="#sources">데이터 출처</a>
+    </nav>
+
+
+    <!-- KPI row -->
+    <section id="kpi" class="grid-kpi">
+      <div class="kpi">
+        <div class="lbl">가격</div>
+        <div class="val">$20.55</div>
+        <div class="sub">전일대비 —</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">5-일 예상 범위</div>
+        <div class="val">$18.96–$22.14</div>
+        <div class="sub">IV+ATR · ±7.7%</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">옵션 (IV/PCR)</div>
+        <div class="val">37.7% / 0.01</div>
+        <div class="sub">CallWall $25.00 · PutWall $17.50</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">숏/차입</div>
+        <div class="val">SI 2.0% · DTC 0.69</div>
+        <div class="sub">SVR — · Borrow —</div>
+      </div>
+    </section>
+
+    <!-- 해설 & 토론 (모바일에서는 상단에 위치) -->
+    <section id="explain-debate" class="sect">
+      <h3>🧠 해설 & 토론</h3>
+
+      
+        <div class="card">
+          <b>일복 균형표 분석</b>
+          <div class="small">지금은 특별한 신호가 없어요. 정보를 더 많이 알면 좋을 것 같아요.</div>
+        </div>
+      
+
+      
+        <div class="card">
+          <b>🤺 Debate (핵심 쟁점)</b>
+          <ul class="small" style="margin-top:6px">
+            
+              <li>MBGL 주식에 대한 분석에서 방향성이 혼란스럽거나 중립적인 경향이 있다.</li>
+            
+              <li>발행된 데이터가 부족하여 확정적인 결론을 내리기 어려운 상황이다.</li>
+            
+              <li>고평가 우려와 기술적인 중립 신호로 인해 확신이 낮은 상황이다.</li>
+            
+              <li>대부분의 분석 결과에서 변동성이 지속될 가능성이 있다.</li>
+            
+              <li>일부 분석에서는 매도(Short) 기회에 대해 언급하고 있다.</li>
+            
+              <li>분석가들은 추가적인 데이터와 주가 기술지표 합성 검토가 필요하다는 의견이다.</li>
+            
+              <li>I의 bias는 &#39;neutral&#39;인데 O는 &#39;bullish&#39;로 판단하고 있다.</li>
+            
+              <li>T는 기술 지표가 중립적이라 했지만, F는 고평가 문제를 지적하고 있다.</li>
+            
+              <li>O는 지지/저항 수준을 강조하지만 I는 시나리오 진입/출구가 없다고 한다.</li>
+            
+              <li>F는 고평가를 문제로 했지만, O는 이를 &#39;bullish&#39; 신호로 해석했다.</li>
+            
+              <li>S는 주식 거래가 우세하다고 했지만, I는 배경 데이터가 부족하다고 지적한다.</li>
+            
+              <li>추가적인 데이터 확보 및 시장 신호 강화 검토 필요.</li>
+            
+              <li>MBGL 주식의 기술적 지표와 펀더멘털 결합 검토 필요.</li>
+            
+              <li>보유 포지션에 대한 위험 관리 전략 강화 필요.</li>
+            
+          </ul>
+        </div>
+      
+    </section>
+    <!-- chart -->
+    <section id="chart" class="sect">
+      <h3>📈 가격 & 지표</h3>
+      <div class="chart">
+        
+        
+          <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="e52ca8d2-d348-4083-b23d-9f55bbf3cbc4" class="plotly-graph-div" style="height:480px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("e52ca8d2-d348-4083-b23d-9f55bbf3cbc4")) {                    Plotly.newPlot(                        "e52ca8d2-d348-4083-b23d-9f55bbf3cbc4",                        [{"close":{"dtype":"f8","bdata":"AAAAAAAANUAAAAAAAAA3QAAAAMDMDDZAAAAA4KMwNUAAAADAzMwzQAAAAGCPQjNAAAAAQDMzNUAAAAAAAIA1QAAAAGCPQjZAAAAAwMzMNEAAAABgj0I0QAAAAIDrkTRAAAAAAAAANUAAAADA9ag0QAAAAAApHDRAAAAAYLgeNEAAAAAAKdwzQAAAAKBHYTRAAAAAQDOzNEAAAADAzIw0QAAAAGC4njRAAAAA4FG4NUAAAADgUXg1QAAAAEDhejRAAAAAoEdhNEAAAADAzEw1QAAAAIDCNTVAAAAAYI9CNUAAAABA4bo0QAAAAEAzszNAAAAAAAAAM0AAAABguF4zQAAAAGC4njNAAAAA4HrUM0AAAABAClc0QAAAAOBRuDNAAAAAgOvRM0AAAADgo7A0QAAAAEAzMzRAAAAAoJnZM0AAAABAM7MzQAAAAGCPQjRAAAAAwMyMNEA="},"high":{"dtype":"f8","bdata":"AAAAAAAAOkAAAAAAAAA4QAAAAMDMTDdAAAAAAACANUAAAABAM\u002fM0QAAAAIDCdTNAAAAAIIVrNUAAAADgUfg1QAAAAOB6VDZAAAAA4FG4NUAAAADAzAw1QAAAAIA9SjVAAAAAYGZmNUAAAABguF41QAAAACCuxzRAAAAAoEehNEAAAADgehQ0QAAAAOCjcDRAAAAAQOG6NEAAAABAClc1QAAAAKCZGTVAAAAAAAAANkAAAACgcP01QAAAAGCPQjVAAAAAgMJ1NEAAAAAgXE81QAAAAIDrUTVAAAAAgOuRNUAAAABgj0I1QAAAAEAzszRAAAAAQDOzM0AAAADAzMwzQAAAAEDhujNAAAAAAAAANEAAAAAA1yM1QAAAAEAKVzRAAAAA4FE4NEAAAACgRyE1QAAAAOB61DRAAAAAQDNzNEAAAADgUTg0QAAAAAApXDRAAAAAQOH6NEA="},"low":{"dtype":"f8","bdata":"AAAAAAAANUAAAAAAAMA1QAAAAAAAADZAAAAAoJkZMkAAAADAzMwzQAAAACCFqzFAAAAAAABAM0AAAADA9egzQAAAAIDr0TRAAAAAAADANEAAAAAAAAA0QAAAAIDCNTRAAAAAYI9CNEAAAACgRyE0QAAAAADX4zNAAAAAoEfhM0AAAABAM3MzQAAAAGCPwjNAAAAAwMzMM0AAAACgR2E0QAAAAMDMTDRAAAAAwPXoM0AAAABgj0I1QAAAAAApHDRAAAAAwPXoM0AAAADAHkU0QAAAAAAAwDRAAAAAwPXoNEAAAABgZmY0QAAAAOBRuDJAAAAAgBSuMkAAAABA4boyQAAAAKCZGTNAAAAAwMyMM0AAAAAA1+MzQAAAAKBHoTNAAAAAoEdhM0AAAADgo\u002fAzQAAAACCuBzRAAAAA4FG4M0AAAACAPYozQAAAAEAzszNAAAAAwPUoNEA="},"name":"MBGL","open":{"dtype":"f8","bdata":"AAAAwMwMOUAAAAAAAAA2QAAAAMDMTDdAAAAAwMxMNEAAAABAM\u002fM0QAAAAKCZ2TJAAAAAAABAM0AAAADgUbg0QAAAAOCjMDVAAAAAIK6HNUAAAADAzAw0QAAAAKBHYTRAAAAAAClcNEAAAACgcD01QAAAAIDCNTRAAAAAYGZmNEAAAADA9egzQAAAAKCZ2TNAAAAAIFzPM0AAAAAghas0QAAAAMDMTDRAAAAAAAAANEAAAABA4Xo1QAAAAKBwPTVAAAAAoJkZNEAAAADAHkU0QAAAAAAAwDRAAAAAIFwPNUAAAADAHgU1QAAAAGC4XjRAAAAAgMI1M0AAAABA4boyQAAAAAAAQDNAAAAAAADAM0AAAACA69E0QAAAAOBRODRAAAAAgBSuM0AAAADgo\u002fAzQAAAAIDr0TRAAAAAwMxMNEAAAACgmdkzQAAAACCuxzNAAAAAwPUoNEA="},"showlegend":false,"x":["2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000"],"type":"candlestick","xaxis":"x","yaxis":"y"},{"line":{"color":"#FFA500","width":1},"mode":"lines","name":"EMA20","x":["2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAANUAMwzAMwzA1QCNb+8e3RTVAB3em4rVDNUD6\u002fa40ASA1QPvxhaaI8jRAgv9sR7H4NEDLzm40lAU1QIeWuYHEIzVAVtEhJnwbNUBa+jZQ0wY1QMt0nwux+zRAYte0Fhr8NEA0GEICL\u002fQ0QNpSnSac3zRArbimUD3NNEA78BySR7Y0QKNr6TEvrjRAxHllfKmuNECxz1vkb6s0QBrIwNc5qjRAwiIc\u002ffLDNEA2UNCYINU0QPRgNkeIzDRA0d3bW1HCNEB0+Ymugc80QHUSTLY+2TRAan7vZEbjNECdQf2Fbd80QAjmFbDVwjRAOFZ16OWXNECt+F1VEno0QFM2YVYuZTRAfIZ8Y2ZXNEBYJA+dXVc0QI3Lk+w3SDRAZ4d5sfM8NECaADFI+Ec0QE4x4+X9RTRAU5qQNKs7NEDRl7P4qy40QIDS992QMDRA7lwpnlk5NEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#ff7f0e","width":1},"mode":"lines","name":"Tenkan","opacity":0.9,"x":["2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAJDC1TVAAAAAkMLVNEAAAADwKHw0QAAAAAAAADRAAAAAAAAANEAAAAAAAAA0QAAAAHA9yjRAAAAAQOEaNUAAAAAQ1+M0QAAAAJDClTRAAAAA0MxsNEAAAADQzGw0QAAAANDMbDRAAAAAoJm5NEAAAACgmbk0QAAAAKCZuTRAAAAAoJm5NEAAAACwR+E0QAAAAGBm5jRAAAAA4Hr0NEAAAADgevQ0QAAAAPAoXDRAAAAAkMJVNEAAAAAAACA0QAAAAAAAIDRAAAAAAAAgNEAAAAAAACA0QAAAAAAAIDRAAAAA8FH4M0AAAADA9egzQAAAAMD16DNAAAAAIFzvM0AAAABQuB40QAAAAFCPQjRAAAAAUI9CNEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#1f77b4","width":1},"mode":"lines","name":"Kijun","opacity":0.9,"x":["2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAACQwtU1QAAAAJDC1TRAAAAA8Ch8NEAAAAAAAAA0QAAAAAAAADRAAAAAAAAANEAAAACwR4E0QAAAALBHgTRAAAAAsEeBNEAAAABAClc0QAAAAEAKVzRAAAAAQApXNEAAAABAClc0QAAAAEAKVzRAAAAAQApXNEAAAABAClc0QAAAAEAKVzRAAAAAQApXNEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#2ca02c","width":1},"mode":"lines","name":"Span A","opacity":0.7,"x":["2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAghVs1QAAAAHgU3jRAAAAA6FG4NEAAAABwPXo0QAAAAHgULjRAAAAASOEqNEAAAADYo1A0QAAAANijUDRAAAAA2KNQNEAAAAAghTs0QAAAACCFOzRAAAAAGK4nNEAAAAAAACA0QAAAAAAAIDRAAAAAMDMjNEAAAABI4To0QAAAAMjMTDRAAAAAyMxMNEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#d62728","width":1},"mode":"lines","name":"Span B","opacity":0.7,"x":["2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8="},"type":"scatter","xaxis":"x","yaxis":"y"},{"fill":"toself","fillcolor":"rgba(111, 168, 220, 0.2)","hoverinfo":"skip","line":{"width":0},"name":"Cloud","showlegend":true,"x":["2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-22T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAghVs1QAAAAHgU3jRAAAAA6FG4NEAAAABwPXo0QAAAAHgULjRAAAAASOEqNEAAAADYo1A0QAAAANijUDRAAAAA2KNQNEAAAAAghTs0QAAAACCFOzRAAAAAGK4nNEAAAAAAACA0QAAAAAAAIDRAAAAAMDMjNEAAAABI4To0QAAAAMjMTDRAAAAAyMxMNEAAAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fw=="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#9467bd","width":1},"mode":"lines","name":"Chikou","opacity":0.8,"x":["2026-05-31T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-19T00:00:00.000000000","2026-06-20T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-03T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAANUAAAAAAAAA3QAAAAMDMDDZAAAAA4KMwNUAAAADAzMwzQAAAAGCPQjNAAAAAQDMzNUAAAAAAAIA1QAAAAGCPQjZAAAAAwMzMNEAAAABgj0I0QAAAAIDrkTRAAAAAAAAANUAAAADA9ag0QAAAAAApHDRAAAAAYLgeNEAAAAAAKdwzQAAAAKBHYTRAAAAAQDOzNEAAAADAzIw0QAAAAGC4njRAAAAA4FG4NUAAAADgUXg1QAAAAEDhejRAAAAAoEdhNEAAAADAzEw1QAAAAIDCNTVAAAAAYI9CNUAAAABA4bo0QAAAAEAzszNAAAAAAAAAM0AAAABguF4zQAAAAGC4njNAAAAA4HrUM0AAAABAClc0QAAAAOBRuDNAAAAAgOvRM0AAAADgo7A0QAAAAEAzMzRAAAAAoJnZM0AAAABAM7MzQAAAAGCPQjRAAAAAwMyMNEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"marker":{"color":["#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a"]},"name":"Volume","showlegend":false,"x":["2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAABY60AAAAAAIGwEQQAAAAAAGQlBAAAAABJUl0EAAADA9bd5QQAAAEBLGIFBAAAAAIq2dEEAAADAXZpwQQAAAIAHTmFBAAAAADSXVkEAAAAALtZUQQAAAAAiVllBAAAAAL0rV0EAAAAAGtFUQQAAAADTUVdBAAAAAOL8UUEAAAAAH7lTQQAAAAAdbFJBAAAAAM3HUEEAAAAA6NlPQQAAAADyC0ZBAAAAABCXV0EAAAAAvlZNQQAAAAASxEVBAAAAAE5QRkEAAAAAvO5DQQAAAADUYklBAAAAADprSUEAAAAAPtlKQQAAAACe1GRBAAAAAOS\u002fUEEAAAAAHZ5SQQAAAACLaFFBAAAAAGitTEEAAAAAQuNLQQAAAACQ0ExBAAAAAPbpVUEAAAAAIwJXQQAAAAC+9kNBAAAAAMAkRkEAAAAAAcpRQQAAAAB6UkpBAAAAAIrJRUE="},"type":"bar","xaxis":"x2","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x2","showticklabels":false,"rangeslider":{"visible":false},"title":{"text":""},"fixedrange":true},"yaxis":{"anchor":"x","domain":[0.33499999999999996,0.9999999999999999],"title":{"text":"Price"},"fixedrange":true},"xaxis2":{"anchor":"y2","domain":[0.0,1.0]},"yaxis2":{"anchor":"x2","domain":[0.0,0.285],"title":{"text":"Volume"},"fixedrange":true},"shapes":[{"fillcolor":"rgba(96,165,250,0.2)","layer":"below","line":{"width":0},"type":"rect","x0":"2026-08-25T00:00:00","x1":"2026-08-31T00:00:00","xref":"x domain","y0":18.96,"y1":22.14,"yref":"y"},{"fillcolor":"rgba(96,165,250,0.2)","layer":"below","line":{"width":0},"type":"rect","x0":"2026-08-25T00:00:00","x1":"2026-08-31T00:00:00","xref":"x2 domain","y0":18.96,"y1":22.14,"yref":"y2"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":18.96,"y1":18.96,"yref":"y"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x2 domain","y0":18.96,"y1":18.96,"yref":"y2"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":22.14,"y1":22.14,"yref":"y"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x2 domain","y0":22.14,"y1":22.14,"yref":"y2"}],"annotations":[{"showarrow":false,"text":"5-Day Expected Range","x":0,"xanchor":"left","xref":"x domain","y":22.14,"yanchor":"top","yref":"y"},{"showarrow":false,"text":"5-Day Expected Range","x":0,"xanchor":"left","xref":"x2 domain","y":22.14,"yanchor":"top","yref":"y2"}],"font":{"size":13},"margin":{"l":48,"r":16,"t":44,"b":36},"autosize":true,"title":{"text":"MBGL — Price Chart"},"dragmode":false,"hovermode":"x unified"},                        {"responsive": true, "scrollZoom": false, "doubleClick": false, "displayModeBar": false, "displaylogo": false}                    )                };            </script>        </div>
+        
+      </div>
+      <div class="small">EMA/ATR/모멘텀 등은 오른쪽 “트렌드 & 변동성” 표에서 확인하세요.</div>
+    </section>
+
+    
+    <section id="agents-raw" class="sect">
+      <h3>🧾분야별 에이전트 상세 분석 결과</h3>
+
+      <div class="grid-3" style="margin-top:10px">
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Fundamental</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>요약:</b> Mobility Global의 주가는 높은 PE 비율로 평가되지만, 최근 스핀오프 후 변동성이 관찰됩니다.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>EPS는 0.43으로 긍정적입니다.</li><li>PER이 47.79로 업종 평균에 비해 높습니다.</li><li>배당수익률은 0%로 방어적 성향이 낮습니다.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Sentiment</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>요약:</b> MBGL에 대한 뉴스는 긍정적이지만, 의회 거래에서는 매도가 우세합니다.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>뉴스에서 긍정적인 반응을 보이고 있습니다.</li><li>소셜 미디어 활동은 거의 없습니다.</li><li>의회에서는 매도 거래가 우세합니다.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Technical</b>
+              
+              <span class="pill">conf 0.80</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>요약:</b> MBGL은 현재 기술 지표에서 중립적이지만 옵션 데이터와 결합하여 강세 신호가 나타나고 있다. 투자자들은 지지와 저항 수준을 주의 깊게 살펴볼 필요가 있다.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>RSI는 중립으로 강세 또는 약세 신호 없음.</li><li>EMA 정렬이 불완전하여 방향성 판단 어려움.</li><li>옵션 평가에서 강세 시그널.</li><li>옵션 및 기술 지표 결합 강세 시그널.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Ichimoku</b>
+              
+              <span class="pill">conf 0.30</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>요약:</b> 지금은 특별한 신호가 없어요. 정보를 더 많이 알면 좋을 것 같아요.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>주어진 데이터가 부족하여 추세나 모멘텀을 명확히 판단하기 어렵습니다.</li><li>가격 정보는 있으나, 일목균형표의 세부 요소들이 제공되지 않았습니다.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Options</b>
+              
+              <span class="pill">conf 0.80</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>요약:</b> 풋벽 $17.50 (1.6σ, 터치확률 11%) 아래 지지, 22일 남음</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>IV 3개월 랭크/퍼센타일 데이터 없음</li><li>Max Pain $20.00, 현재가 약간 아래에 위치</li>
+              </ul>
+            
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- forecast + quant -->
+    <section id="forecast" class="sect grid-2">
+      <div class="card">
+        <b>🔮 예상 범위</b>
+        <div class="stat">
+          <span class="chip">IV+ATR</span>
+          <span class="muted">DTE: 30</span>
+        </div>
+        <div style="margin-top:8px">
+          <div><b>Low–High:</b> $18.96–$22.14</div>
+          <div class="small">입력: spot $20.55, IV30 37.7%, ATR14 0.93</div>
+        </div>
+      </div>
+      <div class="card">
+        <b>📊 트렌드 & 변동성</b>
+        <div class="table-scroll">
+          <table class="tbl rtable">
+            <thead>
+              <tr><th>RSI(14)</th><th>ATR(14)</th><th>EMA20</th><th>EMA50</th><th>EMA200</th><th>1M</th><th>3M</th><th>6M</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="RSI(14)">60.27</td>
+                <td data-label="ATR(14)">0.93</td>
+                <td data-label="EMA20">$20.22</td>
+                <td data-label="EMA50">—</td>
+                <td data-label="EMA200">—</td>
+                <td data-label="1M">-4.3%</td>
+                <td data-label="3M">—</td>
+                <td data-label="6M">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- options -->
+    <section id="options" class="sect">
+      <h3>🧩 옵션: IV, PCR, 디 dealer 레벨</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead>
+            <tr>
+              <th>IV30</th><th>P/C Vol</th><th>P/C OI</th>
+              <th>Call Wall</th><th>Put Wall</th><th>Gamma Flip</th><th>Max Pain</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="IV30">37.7%</td>
+              <td data-label="P/C Vol">0.01</td>
+              <td data-label="P/C OI">0.13</td>
+              <td data-label="Call Wall">$25.00</td>
+              <td data-label="Put Wall">$17.50</td>
+              <td data-label="Gamma Flip">—</td>
+              <td data-label="Max Pain">$20.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small">출처: Finnhub Option Chain API</div>
+    </section>
+
+
+    <!-- short -->
+    <section id="short" class="sect">
+      <h3>📉 숏/차입</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead>
+            <tr><th>SI(sh)</th><th>SI% Float</th><th>DTC</th><th>SVR</th><th>Borrow Fee</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="SI(sh)">5,840,000</td>
+              <td data-label="SI% Float">2.0%</td>
+              <td data-label="DTC">0.69</td>
+              <td data-label="SVR">—</td>
+              <td data-label="Borrow Fee">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small">SI/DTC는 월간·격월 값, SVR은 FINRA 일간 비율, 차입금리는 브로커 추정치입니다.</div>
+    </section>
+
+
+    <!-- news & social -->
+    <section id="news" class="sect">
+      <h3>📰 최근 뉴스</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead><tr><th>Headline</th><th>Source</th><th>Published</th></tr></thead>
+          <tbody>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxQRF9OQkYtNlM2VG1UVzNxNDg1SXdJZ1BLYUoya1FGQ2VvcVY3SHU5V20xdUFOQnV0UmV3SjVka1l6NnZyT3djVS1SeTNNM1dvaVMxUFZmeHBmSUpFeklnanI3bmJFYWo5bEsxUWVZbm1JY2lYYlhBNlYzR2ZpRjF1MnF5RDd5cTNHR0RoSnJ6MU8xQ1Mwbm5EeGN4dEoxWXR1ZVRJMEl1WFhMX3VXVkJkbDNPQ0Z6NXNYUmpyZG1XVzU?oc=5">Rep. Kelly Morrison Sells Mobility Global, Inc. (NYSE:MBGL) Stock - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 27 Aug 2026 06:05:05 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiowFBVV95cUxOZ1FsSkhSSi1QMEpZNFdBRm5LZHVIaV9qUm4xOVlXS2VWSVZDOG5yd1NQQUtwN3pPSmlVSXFVbGlsVk9OOWw4d1N6VEFNM20xdnYwbWlxQmpnUGNtN2tPMkoxaEU1UVZPQVNsSE1QcVdGWjdjY0EzNmlnLWVUcGN5SGNPOXNaWkNrcmFET3hkUVVyc1pPV0lESTF5S0VSOGJERXlN?oc=5">CARFAX finds 1 in 4 drivers behind on car maintenance as school starts - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Tue, 25 Aug 2026 12:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiUEFVX3lxTE1yVTNMYXJhRGc2ek1CSDl2TFQ0bHpRMWt2WjI1ZWpBQVNEN1dwMEdXNzUzZkF1cFFoYVdtbkwySmVZZnZMZXhmU0IyNlAxaXA4?oc=5">symbol__ Stock Quote Price and Forecast - CNN</a></td>
+                <td data-label="Source" class="small">CNN</td>
+                <td data-label="Published" class="small">Fri, 03 Jul 2026 01:53:32 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMingFBVV95cUxNZm9FSWw0eTl3SVpkYnkxbkJZVy1HNEgteGRoaENrS2pXQ0xmeWJ4WFVmTGlKUDd0LW1UckNJNlZuQlJxZE9INUYtc0diekZkN0prRm1qM3pVX2ZBNmRiR1ZDZ05BOFR5dGVMNDNVSUJxeEw2NVQ2Yi1VSHRPdXlZNGItaGg0OEZOaVBHbG1Ec0NWbjBSRDF3VnBNYzNTZw?oc=5">Mobility Global (MBGL) Begins NYSE Trading After S&amp;P Global Spin Off - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 03 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMi2wFBVV95cUxQS0xvaHpiZHFRdkNSYTBlVmxCNUgyLXFMOGlDUXVsa2l4YlJpLU03SlpsMm1uWW1nVGhYRlB2YzZDeGpTandkc0Z0ZXcwVXk2MXNtcW1oN2FORmF4ZnRHdmJ3dWo2Z1RpVEwzbEFPaWhyVnlwblR5U1BoY0NFY3kwM3BOZGxFNzRXVXh0bDFsUmp2aFp1aDFpdkdaSjVxLXJEeWtpX3JhMjd2OGxNS3FnR21pb1d0c0NBRllucFJBeHRXWGZrREg3NUVwQzNSLUdYc1kzdERLZm5ybXfSAeABQVVfeXFMTXlPQjBudEUwRzI4OXZ6aVNGZVNRQXh2TVBDVW9xV0lPVExRdkp2SDFnaTFBdUl0MjR4dGQxREVNenpLNnZ2Q0VXYnVQYmx5MHBTVVQ3MnVRbks3blFhQ0xBYWh4czZGRUhlbFFXcV9lb2xYbnFsSV9zd2tmSVQ2aE9qcUFEUFV6VlRCSTRQYnQ0d2tzSUttVHFOLXJleHROMkFHc0EtRHVaNlp6eEJWck00SmpIcEdzUkhrWDFvYmw3czBtT0xfc1NnUUk3Y2JGVEI2dEtpcGxtUjZ5YmplZ0c?oc=5">Mobility Global (MBGL) Stock Slides As Premium Valuation Draws Scrutiny - simplywall.st</a></td>
+                <td data-label="Source" class="small">simplywall.st</td>
+                <td data-label="Published" class="small">Sun, 09 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimwFBVV95cUxORl9DSEtFd045eFEyNFNBR0VoVVM2dWZNOFd0UzQ5RGJMY19GeEhZNmo5b05KQ2g1Y043U0dEcUJ2RU4yX0pGQ0JoOW5tQ3BxUzhjV0daeFBTaE9WdkphV3dFQnBTd3JIaUR3REd5M3ZSS3BuMkZ2M0pDa1lnZ0NYUWNkQjRhOUZYSUhsN2E3b0JZMmlkTl9aSVpORQ?oc=5">Mobility Global: A Cheaper Spin-Off From S&amp;P Global (NYSE:MBGL) - Seeking Alpha</a></td>
+                <td data-label="Source" class="small">Seeking Alpha</td>
+                <td data-label="Published" class="small">Wed, 19 Aug 2026 17:51:22 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMibkFVX3lxTE16eEFKQjl3WWx5T0N3NGthaGFUNWJoRnlBakNFb3dJSy0zUTRxZVZGb21JR0pZSWxkYWVnenY3RWlKbUVBOGxfNTZVM29HV09ValhHWVJNdlJCU2dpSlpJLVBXeWE5anBvekpUTmZB?oc=5">Mobility Global Inc. Common Stock (MBGL) Historical Quotes - Nasdaq</a></td>
+                <td data-label="Source" class="small">Nasdaq</td>
+                <td data-label="Published" class="small">Wed, 01 Jul 2026 14:17:11 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiugJBVV95cUxNZ3hDVlo1eU5uLTVZUEdrTzdPNWpuU3A5ZllQZFNLTk9JWHhWYWMxcHpqZ3hyei03RXVWNFdjbjBlcUxZQVhVOTBVTzhFVEdMNzk5SjBFR0VSU2dkZzJ2YmJYOFZGTUYyaUVCUEM0eE51V0RxQTFidzlhdHlENHdKdXFjbUxlbnhqczlXZVdIUlF1ZGpxWGFaWVlNeF9zdnROQkFUMlRpTTJlb0d2bFJfR1MwSzB1TFJaYnRhcmJ3dklIajkxZUVXWjE2dnFaOFRiY01wc1YyeWpPd1IwVUFIQThIWlhXS0xrdkZ4dFFaYTY2SC1BaW9UM0RvOWFoUmJsQmdhM3dMc1NIYnZfc2ZSWjlGT2k0UHpEVWZzYmlmMDhoRlhCUkxrc1ljUlM4WTBfQ0hDMDJMOUpYdw?oc=5">MOBILITY GLOBAL INC. COMPLETES SEPARATION FROM S&amp;P GLOBAL INC. AND BEGINS TRADING ON THE NEW YORK STOCK EXCHANGE AS A GLOBAL LEADER IN AUTOMOTIVE DATA &amp; ANALYTICS - PR Newswire</a></td>
+                <td data-label="Source" class="small">PR Newswire</td>
+                <td data-label="Published" class="small">Wed, 01 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMi4AFBVV95cUxOdTZLSC1iZDNORk9ydXZuQzZfTTI5aTRqanl2blBHVXJ0a2ZudjVCOHhIYmtnNkVvSDNDZzhTaktZbjZzOTNORlZ6RzFrU0wyamhNU0ctZWc3Z1oyaDYyZWlJejdRemhrSTNfelRpYm5jU3ZUM1B6RjZRa2sydEplTC0zaFB2SVV1Z3Y5ZTc2a1BlT2ZDUVBVcGVORDNSODQ2bWZLSlpZYUp5djFtN3A2UW1TVWNsdnlseXFxWURTT1NucmVPYWoxbUw5NUMwcjJ6WWdLaGdNVm1JOGF2VGlIUw?oc=5">Mobility Global, Inc. (NYSE:MBGL) Receives Average Recommendation of &#34;Hold&#34; from Analysts - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Wed, 26 Aug 2026 10:18:48 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiqgFBVV95cUxPTE50N3ljck9tb1RFeUNESzAwSzhUaHZOakhRbVNacnJYMzhfWGtHWFV6SXM4Q2U1MnZhQU5MTXU2RGJMQ3pXRXdhbnRtaVA5VThmTzhHWk5CekFVaHUxRE9OMl9sTGE1cmd6ek94ak81RG5Ka2VXUEktX0k3Q3JLNEtYbXMwQmJjZ1ZSM2luWU1fTXVnRFduRmFXSzJRVFE2MkdNcU5DUVdVQQ?oc=5">Mobility Global CEO and CFO to Join Sept. 10 Fireside Chat - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Tue, 04 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiswFBVV95cUxNWXBfUDNxTWs1ajhZQ0w2OFo4RkxfUXFpVDBQZ3VYS0stbGl6aTRET2dsUGRkZHFCVEpJRFE4eHZOYlhRbEJKbng3Q0d1eElLNUVWVEJpZ0FrUGhOcF9IeV9ESkRiQzBuNnZFYlVFcGNGTVlkVEFRSm1YVUVUSjdtVG5MdThhUUVUTDFCdnJ5VzVUYXdNeG9CZkZSalFSZjM1MHFZSE5yTlRyTlVuNWZ5RFBncw?oc=5">Mobility Global Inc. (MBGL) director purchases 50,000 shares in open‑market buys - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Thu, 13 Aug 2026 20:59:52 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiswFBVV95cUxOdEdBS1RsZlppakJzX2pwd2RkOXp1TW1qRnhSR3N3TC1yTjQ1SXFMNHBpTEN4VGZSVDZJZXFGWnVpREJQOGktdTlPeE9ueUR2eFRBV3IxbFdKNDNsLUFuMHNsbEpUSzhScFRCdXNONm9Ma01uLVhnbHFlNkprcW0xdm55VjZsWHNoakZpZW54Ml9RbnNVVzZzeXlVWWtRTTRBUlBQaGRHUmhORjVaOGxfRlEtYw?oc=5">Bank of America Begins Coverage on Mobility Global (NYSE:MBGL) - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Fri, 21 Aug 2026 13:09:46 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMitgFBVV95cUxNQ1JSREhUOFpydXZaT004VXZGTy04M1kxQm1wM0JQNXU1MHlqTUtMTl9CM2xqNHNBcWhNLVFWdk9ab29WWDVzVU5LS1plUUxWSjhfcXRhbExRd2dFam4wYTNLdldvWm1HZWQ2ODc4b3NIQWU5SVdUN3NsYW5uOTlMSEdQSlhGeUFjZDdycFltX05WUjlNT2tVWHRxX3F4bFpFZ0tfaXY2dzZsUlRlMjFTZEhqX2VaUQ?oc=5">Mark Peek Buys 15,000 Shares of Mobility Global (NYSE:MBGL) Stock - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 13 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMikwFBVV95cUxNYzlWTWVYSjZSZUQ2YVFGMGV3WkxvZUlLaktsenlrX1pyMEZDMVFqLUM3Y2tGU1FpQkV1S0Z5aVRHV3M4Tk5sWFdNNEwteW9mVGM1am96TXgyRlVhNjVZajRIQXlYTjJOWmFkXzFNVjZuUmprM2NYcVlzaVVISmZ2dWNPYmxMUkk3QXFHZUdRdmlubU0?oc=5">Three Car Models Are Rated at Roughly 2% Repair Risk—Which? - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Mon, 17 Aug 2026 12:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMixAFBVV95cUxOSzZrSVFtUVB2Q0VzckNfWUxlZlpNaEtueE5JZEh1MFRNNS1WVU9qWm9nOEplOXRCNHZsMXZrLVExNFJoeUI5aE01V0FmZGxCdXVWMlpYVTBZWXM4ekNQNURYTjQ5TnJacDVZYjVRNTVUX0tEWWQtZl8teldDcEtMUmFHTVJBaDFWZk5ZdlhXZnllaDRzTkpXQWdMcmxLVXVhak9oOVBOYm9vX3hvcWt6cm5aYmlRU240U2RNQzNrUUZiSW9M?oc=5">BlackRock (NYSE: BLK) discloses 11.3% ownership of Mobility Global (MBGL) stock - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Thu, 06 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiyAFBVV95cUxQbXRWTEdzMzRsVHZXOWZFSnczZHN3TERCTzJLUUU4QjF0MzFaUjZvQm9ZSGpkejNoempZNkpIZnFKRG1CLWh0Nm44VFItVG5US0dxZE8zc0Z0UzNYVzRRTzlYa04teXRLdnpUOE9jVzFJWmJEWUdVM2pQNFFiZmFMX0dLUEpWTkRxX1J4bEdXZUhmTHpwREFTSVZ2SDNnNGlyNXRSUTBxQjRKT09UUUx0VFZfNlBxZkFXeFByV2R3M0FKVm12T3luWQ?oc=5">Mobility Global (NYSE:MBGL) Director Mark Peek Purchases 25,000 Shares of Stock - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 13 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxOaVJSQ2tNU3VRWkR5eWtVc19Od2swc2lmR2Fkblh4Y1ZVbEN1Z1loU3Mtc0hyb0JfcG5jMzV3VWxtZ1FBbmgxM21iajVmRlpQV0I1TTQ5WHFRM1F1VjhGd3lSNEpCa3FYSmdaUzRsUWJyYjZXeWJrZTdIQVBnNDVVbUVCc09DcE1IMWZvOFNYVFo2NHZBeWxlN0FsVTBjZmxhb2V6TGpSMVhpeThHTEVTTHdKMFR5TGpDbkxzM0laeWc?oc=5">Used-Car Inventory Rose 15.5% in June, Giving Buyers More Choice - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Thu, 13 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMivwFBVV95cUxNVGZUSm1scGhCVzNVTTIzNDRBVXd3c2I2QWx6TlBfcDdLNFFXNVBkZ2JOaXczMjFLQmJBaHdfUFA3bjcwYzVIRm9kdFIzeW10RTg1TlJQc2NwMTRUc2dQVUd2TkU2bTVyU25GMzVROWNwUjItYmJ0cE92bUJwdXl4MkNfUkFQX3BETVZUUzhtVS1BU2wtTUFIMUs0T3VCT1JONVJnVV81NjlaalZKTGp2LXVnVFc2d1FkUjRkTTZhcw?oc=5">Mobility Global (NYSE:MBGL) Shares Gap Up After Insider Buying Activity - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Fri, 14 Aug 2026 14:34:19 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMi2wFBVV95cUxQVzNXWHFUVXRPOWdFVXAzVVp3TFo4blN6WHk0Zjd5VlM1NUNOOFd6bGdqV00zZXlsMThVUXQ4QlRmcjRWamxPTV80VnUweHVWMS1xWkZxd2N4bElEVzAwZ1BoWDB0Ty05REJ2aEExYWM4alA4RTN1bU9DVWV1SlIyYmxqZXhYWExRZ2RoRURhUFgzTThDNFRaVWl0UDVxcC1tekt2cnFxNlYxNGt6NTZQR0hkZmtadlN5UDEtbXdXZTl1M3MzTkRMS0NDczRzZTM4QzVjdG14ZWV3Nm_SAeABQVVfeXFMUERMemF1WHNWNHRuTDJNVXpWUFVSN0tEak5jLWYtUEhqMjhVV3pJaXNwek9tZGVibHlQRzc1bTdobFA3Y2lydXFrQngzMU5BZjdvUDlxQzVMNXRPdDhHYm03QUdkSDZtVTZKOEIyaGZmdnp1Rk8tUU03aUpEaWwwZWE1VWR0TTZhQjlMcTZRdkFZSHdsZmVEcUpBWVJBdzVuN1Yzbzc1dkVkd09YZ0xDc1lra0JYdDRqMWI3aFliVlFYYjZVcUFoUC02TEpyS2lzSnRlV21Tc3NlZzVReDRkdTY?oc=5">What Mobility Global (MBGL)&#39;s S&amp;P Spin-Off And Index Debut Means For Shareholders - simplywall.st</a></td>
+                <td data-label="Source" class="small">simplywall.st</td>
+                <td data-label="Published" class="small">Wed, 08 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQcjk1aUlPOWtiaE9namVtRVltd0ZFbGZaWktOSjItdDBDaFpGRWVRZ0YzaVFPNTEtQ1BORXJlNmtKS1djMWMxR1g5OVVIcnFsQlNqd0x1NVhEdlM2YTJ0aEw0WXRUSTBqNVRUTGdqV0tyakh3X3gwRGRiTnhtdE5PQQ?oc=5">Mobility Global Inc. Common Stock (NYSE:MBGL) Stock Quote - The Chronicle-Journal</a></td>
+                <td data-label="Source" class="small">The Chronicle-Journal</td>
+                <td data-label="Published" class="small">Mon, 10 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMizwFBVV95cUxQeW9uM0YxaVhQcWd6Q0FVeGpCaWlEdXNFTXVVazdSY1ZfUWlqd252b0dGZG1uLTJwVUJjMVRsYjZMSURyMHJmOGxheE1jSWJJNndZclRSd2ZXQWM1dXA2M0FlSTVra21KT0lUZDVhTXBGaW5xdTlKSExGREN3aXlMZ3ZQRVlJM2FvSzNMQno5QjQyZ3hhRmNka3VVamdLZ0VfdXZaaFdyeUFTX0ZJYWp1aXJnSzU2dF8tZENlamtnQmd2alZfd2ltRk5GMVRGbkk?oc=5">Insider Buying: Mobility Global (NYSE:MBGL) Director Purchases 10,000 Shares of Stock - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 13 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiTkFVX3lxTE5HZ0NzX2NjSDBYVmdFR21ROEpfODg4d3RsaUg1NFNYNlB4VXNqbE9WeWhZQXA4cGxfM0hBVnNwTUNKY2lLUkt2amttdGNDUQ?oc=5">Mobility Global Inc WI (MBGL) Stock News - Stock Titan</a></td>
+                <td data-label="Source" class="small">Stock Titan</td>
+                <td data-label="Published" class="small">Fri, 26 Jun 2026 22:28:12 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMi2wFBVV95cUxOQ1l2cnlnZ0MwUXltQTdkY3J4eWpqSlFibzZidXB4Tmc1WGlFaFJlV1BFeHBLWnFZd09tY2ZZc2taUHhXSzlOekd2MFlaOU5Cd2tVT0d3eVZ2QWJKR0tWd2s2MlFaa29NOF9MVVpsLW1zb3pzM1JEdTBKS0JqWE1OTHhrM0daOWs5Vm8xTC14OFNwaGtnbDVPYWN1cnA0QlYtNVZlbDhyWmJaYWdwVDY1ZFRxOUVnY01MZ0lNWWtpT1lTU2dhQ1c0dW5XbVpUZldsS1NIbDlqOXd3WkHSAeABQVVfeXFMTnFVRU9PUU13djNIUXhpQ0pteEx4REpBWlF0WHJiUnVCRGN5VHMwZDFUSjhCSDlDZFhBaDNCM2l3c1M1LWZDa25VVEtub0cwc2tvNXNISmpQcFhUaDhpUnR6eUV4R1BNSzlOYXg5Qzc0eEIyMS1ybEtrS1dlUXZhMjRoM3I5LWktN1R2MG5tdDlXR1EwaVR4V3pBUmhmY1lCRU82RF9Jc0ZiMzNFVWhwRnc5YlVyM2ZNWXpHNHhGZTN4OTJwX2FIVjlYRkhETEdKNWtUSno2WG1YdklLR2N6Y2g?oc=5">Is Mobility Global (MBGL) Cheap Following Its Spin Off From S&amp;P Global? - simplywall.st</a></td>
+                <td data-label="Source" class="small">simplywall.st</td>
+                <td data-label="Published" class="small">Fri, 03 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMikwFBVV95cUxNRlYzZEhOUXpXSFB3RHluMGZuaTJ0SkJMcWtpTEFvdEc4WmxOb1hMbnVyeldXU3dyNEhoR0g1dGRzZGh6bXh2aFl2em9WWV8wQThTNEg4WnBxeFQ3MENKdG11VC1UVXBiNFMyUl9hcEo2b3BDeC10aUo0Q3RnMTRtMnRLSnhNMnEyQlBraTdqRzR5clk?oc=5">Mobility Global: Cash-Rich And Probably Mispriced (NYSE:MBGL) - Seeking Alpha</a></td>
+                <td data-label="Source" class="small">Seeking Alpha</td>
+                <td data-label="Published" class="small">Thu, 02 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxPa3VjcWJuRFoxYmhnbGhkLTVHRnU5a1M1cFZSREp2TFQxbDdBV2pfLV8yVmdXY1FIaHF1YjJKejhZdmR2aHJCcVlXeTljdEwtWTAtZnhtNUphcnloc1Z1WEJXREhINkRIdlBUOUxUWHNtYmhtN1JuX05ENVQ1Z0EwMS0wbU9NTEwwNlF4SU9GcGtTLVgwUFl6Y2RZeDdpaERuQkwyd0FqOGU4UDBMd01qaFYxTkRZelN6?oc=5">BofA Securities Initiates Mobility Global(MBGL.US) With Hold Rating, Announces Target Price $23 - Moomoo</a></td>
+                <td data-label="Source" class="small">Moomoo</td>
+                <td data-label="Published" class="small">Fri, 21 Aug 2026 11:34:00 GMT</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="small">총 25건 · 평균 톤: positive</div>
+    </section>
+
+    <section id="social" class="sect">
+      <h3>💬 소셜 버즈</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead><tr><th>Mentions</th><th>Engagement</th><th>Avg Sentiment</th></tr></thead>
+          <tbody>
+            <tr>
+              <td data-label="Mentions">0</td>
+              <td data-label="Engagement" class="small">0</td>
+              <td data-label="Avg Sentiment" class="small">neutral</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- congress -->
+    <section id="congress" class="sect">
+      <h3>🏛 의회 거래</h3>
+      <div class="small">최근 활동일: 2026-08-11 · Buys 0 / Sells 3</div>
+      <div class="table-scroll" style="margin-top:8px">
+        <table class="tbl rtable">
+          <thead><tr><th>Member</th><th>Chamber/Party</th><th>Type</th><th>Traded</th><th>Filed</th><th>Amount</th></tr></thead>
+          <tbody>
+            
+              <tr>
+                <td data-label="Member">Kelly MorrisonDemocratHouseMN</td>
+                <td data-label="Chamber/Party" class="small">House</td>
+                <td data-label="Type" class="small">Sell</td>
+                <td data-label="Traded" class="small">2026-08-11</td>
+                <td data-label="Filed" class="small">None</td>
+                <td data-label="Amount" class="small">1K–15K</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Member">Kelly MorrisonDemocratHouseMN</td>
+                <td data-label="Chamber/Party" class="small">House</td>
+                <td data-label="Type" class="small">Sell</td>
+                <td data-label="Traded" class="small">2026-08-11</td>
+                <td data-label="Filed" class="small">None</td>
+                <td data-label="Amount" class="small">1K–15K</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Member">Kelly MorrisonDemocratHouseMN</td>
+                <td data-label="Chamber/Party" class="small">House</td>
+                <td data-label="Type" class="small">Sell</td>
+                <td data-label="Traded" class="small">2026-08-11</td>
+                <td data-label="Filed" class="small">None</td>
+                <td data-label="Amount" class="small">1K–15K</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- agents & scenarios -->
+    <section id="agents" class="sect">
+      <h3>🤝 최종 결론 & 에이전트 매매 시나리오</h3>
+
+      <div class="card host">
+        <b>Host Decision:</b>
+        <span class="pill">BUY</span>
+        <span class="chip">conf 0.82</span>
+        <span class="muted">MBGL은 기술적 지표와 옵션 데이터에서 긍정적인 신호가 감지되어 매수 추천이 나옵니다. 그러나, 펀더멘털의 높은 PE 비율은 주의가 필요합니다.</span>
+      </div>
+
+      <div class="grid-3" style="margin-top:12px">
+        
+      </div>
+    </section>
+
+    <!-- sources -->
+    <!-- <section id="sources" class="sect">
+      <h3>📚 Data Sources</h3>
+      <div class="table-scroll">
+        <table class="tbl">
+          
+            <tr><td>price</td><td class="small">Alpha Vantage API</td></tr>
+          
+            <tr><td>quant</td><td class="small">Calculated from OHLCV data</td></tr>
+          
+            <tr><td>options</td><td class="small">Finnhub Option Chain API</td></tr>
+          
+            <tr><td>short</td><td class="small">Fintel + FINRA data</td></tr>
+          
+            <tr><td>congress</td><td class="small">House/Senate trading disclosures</td></tr>
+          
+            <tr><td>news</td><td class="small">Google News RSS</td></tr>
+          
+            <tr><td>social</td><td class="small">StockTwits/Reddit APIs</td></tr>
+          
+            <tr><td>forecast</td><td class="small">IV &amp; ATR model (compute_anticipated_price)</td></tr>
+          
+            <tr><td>chart</td><td class="small">Plotly via render_price_chart</td></tr>
+          
+            <tr><td>template</td><td class="small">report_v4_pro.html</td></tr>
+          
+        </table>
+      </div>
+      <div class="small">본 자료는 투자 조언이 아닙니다.</div>
+    </section>
+  </div> -->
+
+  <script>
+    // theme toggle (persisted)
+    (function(){
+      const btn = document.getElementById('themeBtn');
+      const get = () => localStorage.getItem('theme') || 'light';  // 기본 light
+      const set = t => { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); };
+      set(get());
+      btn && (btn.onclick = () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    })();
+
+    // 모바일에서 "해설 & 토론" 섹션을 KPI 위로 이동 (내용은 그대로, 위치만 변경)
+    (function(){
+      const debate = document.getElementById('explain-debate');
+      const kpi = document.getElementById('kpi');
+      if (!debate || !kpi) return;
+      const originalParent = debate.parentNode;
+      const nextSibling = debate.nextElementSibling;
+
+      function placeMobile(){
+        const isMobile = window.matchMedia('(max-width: 860px)').matches;
+        if (isMobile){
+          if (debate.previousElementSibling !== kpi.previousElementSibling) {
+            kpi.parentNode.insertBefore(debate, kpi);   // KPI 앞에 배치
+          }
+        } else {
+          // 데스크탑에서는 원래 위치로 복귀
+          if (nextSibling) originalParent.insertBefore(debate, nextSibling);
+          else originalParent.appendChild(debate);
+        }
+      }
+      window.addEventListener('resize', placeMobile);
+      document.addEventListener('DOMContentLoaded', placeMobile);
+      placeMobile();
+    })();
+  </script>
+  <script>
+  /* ====== Scrape Guard (우클릭/복사/드래그 차단) ======
+    - PROTECT: 전체 보호 ON/OFF
+    - BLOCK_KEYS: Ctrl/Cmd + C / X / S / P / U / A 차단
+    - 차트/링크/버튼/폼 요소는 예외 처리
+  */
+  (function(){
+    const PROTECT   = false;   // 보호 켜기/끄기
+    const BLOCK_KEYS= false;   // 단축키 차단(복사/인쇄 등)
+    const SCOPE     = document.getElementById('content-root'); // 리포트 래퍼
+
+    if (!SCOPE) return;
+    if (PROTECT) SCOPE.classList.add('protect');
+
+    const isEditable = (el) => {
+      const tag = (el && el.tagName || '').toLowerCase();
+      return /(input|textarea|select)/.test(tag) || (el && el.isContentEditable);
+    };
+
+    // 우클릭 메뉴 차단
+    document.addEventListener('contextmenu', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 텍스트 블록 선택 차단
+    document.addEventListener('selectstart', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 드래그 차단 (이미지/텍스트 드래그)
+    document.addEventListener('dragstart', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 흔한 단축키 차단 (옵션)
+    if (BLOCK_KEYS){
+      document.addEventListener('keydown', (e)=>{
+        if (!PROTECT) return;
+        const k = (e.key||'').toLowerCase();
+        // Ctrl/Cmd + C/X/S/P/U/A (복사/잘라내기/저장/인쇄/소스보기/전체선택)
+        if ((e.ctrlKey || e.metaKey) && ['c','x','s','p','u','a'].includes(k)){
+          // 입력필드에서만 허용
+          if (!isEditable(e.target)) e.preventDefault();
+        }
+      }, {capture:true});
+    }
+  })();
+  </script>
+</body>
+</html>
