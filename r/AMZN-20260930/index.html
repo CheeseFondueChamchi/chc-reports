@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>AMZN Stock Report — AMZN</title>
+  <link rel="canonical" href="https://cheesefonduechamchi.github.io/chc-reports/r/AMZN-20260930/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Multi-agent Stock Research" />
+  <meta property="og:url" content="https://cheesefonduechamchi.github.io/chc-reports/r/AMZN-20260930/" />
+  <meta property="og:title" content="AMZN — HOLD · multi-agent stock report" />
+  <meta property="og:description" content="Amazon shows mixed signals: positive financial outlook but conflicting technical and bearish Ichimoku indicators. Options imply resistance, suggesting holding." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AMZN — HOLD · multi-agent stock report" />
+  <meta name="twitter:description" content="Amazon shows mixed signals: positive financial outlook but conflicting technical and bearish Ichimoku indicators. Options imply resistance, suggesting holding." />
+  <meta property="og:image" content="https://cheesefonduechamchi.github.io/chc-reports/r/AMZN-20260930/card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AMZN — HOLD · multi-agent stock report" />
+  <meta name="twitter:image" content="https://cheesefonduechamchi.github.io/chc-reports/r/AMZN-20260930/card.png" />
+  <style>
+    /* Light (기본) */
+    :root{
+      --bg:#f7f9fc; --fg:#0b1220; --muted:#5b6677; --panel:#ffffff; --line:#e5e7eb;
+      --accent:#2563eb; --ok:#16a34a; --warn:#f59e0b; --risk:#dc2626; --chip:#eef2ff;
+    }
+    /* Dark (토글 시) */
+    [data-theme="dark"]{
+      --bg:#0b0f14; --fg:#e6edf3; --muted:#9aa4b2; --panel:#0f172a; --line:#1f2937;
+      --accent:#60a5fa; --ok:#22c55e; --warn:#f59e0b; --risk:#ef4444; --chip:#0b1220;
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+    [data-theme="dark"] .topbar{background:rgba(11,15,20,.8)}
+    .topbar .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 20px}
+
+    .badge{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700}
+    .spacer{flex:1}
+    .btn{border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+
+    .hdr{display:flex;align-items:flex-end;gap:16px;margin:18px 0 6px}
+    .hdr h1{margin:0;font-size:clamp(18px,4vw,24px)}
+    .muted{color:var(--muted);font-size:12px}
+
+    .nav{display:flex;gap:10px;flex-wrap:nowrap;margin:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap}
+
+    .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+    .kpi .lbl{font-size:12px;color:var(--muted)}
+    .kpi .val{font-weight:800;font-size:clamp(18px,5vw,20px);line-height:1.2;margin:6px 0}
+    .kpi .sub{font-size:12px;color:var(--muted)}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+
+    .sect{margin:24px 0}
+    .sect h3{margin:0 0 10px}
+
+    .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+    .tbl{width:100%;border-collapse:collapse;min-width:720px}
+    .tbl th,.tbl td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+    .tbl th{background:#f3f6fb;color:var(--fg)}
+
+    .chip{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-size:12px}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:12px}
+
+    .small{font-size:12px;color:var(--muted)}
+    /* touch-action: 세로 스크롤은 허용하되 차트 위에서의 핀치 줌만 막는다.
+       (차트는 PNG 라 확대해도 해상도가 늘지 않고, 스크롤 중 오작동만 유발했다) */
+    .chart{border:1px solid var(--line);border-radius:12px;overflow:hidden;
+           touch-action:pan-x pan-y}
+
+    details{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel)}
+    details summary{cursor:pointer;font-weight:600}
+
+    .stat{display:flex;align-items:center;gap:8px}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .risk{color:var(--risk)}
+    .host{display:flex;gap:8px;align-items:center}
+
+    :target{scroll-margin-top:80px;box-shadow:0 0 0 2px var(--accent) inset;border-radius:10px}
+
+    @media (max-width:980px){
+      .grid-kpi{grid-template-columns:1fr}
+      .cards,.grid-3{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+      .tbl{min-width:560px}
+    }
+    /* .protect{
+      /* -webkit-user-drag: none; */
+      /* -webkit-touch-callout: none;  iOS long-press 메뉴 차단 */
+      /* user-select: none;            텍스트 블록 선택 차단 */
+    /* } 
+    /* 코드 블록(원문 JSON) */
+    .code-block{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 420px;         /* 너무 길면 스크롤 */
+      overflow: auto;
+    }
+    /* 필요하면 선택 허용(복사방지 사용 중에도) → 주석 해제 시 적용
+    .protect .code-block{ user-select:text; }
+    */
+
+    /* 이미지 우클릭/드래그 차단 (차트는 예외처리 아래) */
+    /* .protect img{
+      pointer-events: none;
+    } */
+
+    .protect .chart img{
+      pointer-events: auto;   /* 차트 이미지는 터치 허용 */
+    }
+    /* 상호작용/접근성 예외: 링크/버튼/폼/차트는 정상 동작 */
+    .protect a,
+    .protect button,
+    .protect input,
+    .protect select,
+    .protect textarea,
+    .protect .chart,
+    .protect .plotly-graph-div,
+    .protect .plot-container{
+      user-select: auto;
+      pointer-events: auto;
+    }
+    /* 라이트 테마용 타일 */
+    body.watermark{
+      --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%230B1220' fill-opacity='0.06'>치퐁참</text></g></svg>");
+      background-image: var(--wm-img);
+      background-repeat: repeat;
+      background-position: 0 0;
+      background-attachment: fixed;   /* 스크롤해도 고정 */
+    }
+
+    /* 다크 테마일 때는 밝은 색으로 */
+    [data-theme="dark"].watermark{
+      --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%23E6EDF3' fill-opacity='0.08'>치퐁참</text></g></svg>");
+      background-image: var(--wm-img);
+    }
+
+    /* 인쇄 시 너무 진하면 살짝 더 옅게 */
+    @media print{
+      body.watermark{
+        --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%230B1220' fill-opacity='0.04'>치퐁참</text></g></svg>");
+        background-image: var(--wm-img);
+      }
+    }
+    .chart img{
+              width:100%;
+              height:auto;
+              display:block;
+              touch-action:pan-x pan-y;   /* 핀치 줌 차단 (스크롤은 유지) */
+              -webkit-user-select:none; user-select:none;
+              -webkit-touch-callout:none; /* iOS 롱프레스 확대 메뉴 방지 */
+            }
+    /* 인터랙티브 Plotly: 폭은 컨테이너에 맞추고 높이만 지정.
+       모바일은 폭이 좁아 2단(가격+거래량) 서브플롯이 눌리므로 더 높게 준다. */
+    .chart .plotly-graph-div{ width:100% !important; height:480px !important; }
+    @media (max-width:640px){
+      .chart .plotly-graph-div{ height:560px !important; }
+    }
+
+
+    /* ===== Responsive tables: desktop=table, mobile=cards ===== */
+    .tbl.rtable { min-width: 0; }            /* 기본: 좌우 스크롤 제거 */
+    .table-scroll { overflow-x: auto; }      /* 데스크톱 보조 */
+
+    /* 모바일에서 표를 카드로 변환 */
+    @media (max-width: 860px){
+      .tbl.rtable thead { display:none; }
+      .tbl.rtable, .tbl.rtable tbody, .tbl.rtable tr, .tbl.rtable td {
+        display:block; width:100%;
+      }
+      .tbl.rtable tr{
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin: 10px 0;
+        padding: 6px 8px;
+      }
+      .tbl.rtable td{
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 6px;
+      }
+      .tbl.rtable td:last-child{
+        border-bottom: 0;
+      }
+      .tbl.rtable td::before{
+        content: attr(data-label);
+        display:block;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body class="watermark">
+  <!-- Sticky topbar -->
+  <div class="topbar">
+    <div class="inner">
+      <span class="badge">AMZN</span>
+      <strong>AMZN Stock Report</strong>
+      <span class="muted">Automated report · data as of 2026-09-30 close (ET)</span>
+      <div class="spacer"></div>
+      <button class="btn" id="themeBtn">Theme</button>
+      <a class="btn" href="#sources">Data Sources</a>
+    </div>
+  </div>
+
+  <div class="wrap" id="content-root">
+    <div class="hdr">
+      <h1>AMZN</h1>
+      <div class="muted">Close $249.15 (2026-09-30 ET) · Mkt Cap 2,687,409,848,000</div>
+    </div>
+
+    <!-- quick nav -->
+    <nav class="nav">
+      <a href="#explain-debate">Commentary & Debate</a><!-- shown on top on mobile -->
+      <a href="#kpi">KPI</a>
+      <a href="#chart">Chart</a>
+      <a href="#forecast">Forecast</a>
+      <a href="#options">Options</a>
+      <a href="#short">Short/Borrow</a>
+      <a href="#news">News</a>
+      <a href="#social">Social</a>
+      <a href="#congress">Congress</a>
+      <a href="#agents">Agents & Scenarios</a>
+      <a href="#sources">Data Sources</a>
+    </nav>
+
+
+    <!-- KPI row -->
+    <section id="kpi" class="grid-kpi">
+      <div class="kpi">
+        <div class="lbl">Close · 2026-09-30 (ET)</div>
+        <div class="val">$249.15</div>
+        <div class="sub">vs prev close —</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">5-Day Range (anchored on session open)</div>
+        <div class="val">$233.71–$259.84</div>
+        <div class="sub">IV-skew+ATR · ±5.3%</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Options (IV/PCR)</div>
+        <div class="val">39.8% (rank 62) / 0.60</div>
+        <div class="sub">CallWall $260.00 · PutWall $220.00</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Short/Borrow</div>
+        <div class="val">SI 0.8% · DTC 2.05</div>
+        <div class="sub">SVR — · Borrow —</div>
+      </div>
+    </section>
+
+    <!-- Commentary & Debate (placed on top on mobile) -->
+    <section id="explain-debate" class="sect">
+      <h3>🧠 Commentary & Debate</h3>
+
+      
+        <div class="card">
+          <b>Ichimoku Analysis</b>
+          <div class="small">The price is under a cloud, and there&#39;s a lot of signs it&#39;s going down more. A special line that looks back says prices are lower than before. Another line shows a stronger down push. All of these suggest the trend is weak and likely to keep dropping.</div>
+        </div>
+      
+
+      
+        <div class="card">
+          <b>🤺 Debate (key issues)</b>
+          <ul class="small" style="margin-top:6px">
+            
+              <li>All agents agree that Amazon has a complex market position with both positive and negative indicators.</li>
+            
+              <li>The financial indicators show Amazon&#39;s strong profitability and growth potential, supported by a positive EPS and reasonable valuation ratios.</li>
+            
+              <li>Technical and Ichimoku analyses provide conflicting views, as T suggests neutral momentum, while I indicates a bearish trend is likely to continue.</li>
+            
+              <li>O indicates bullish potential with strong resistance at $260, yet I detects a bearish bias with the price below the Ichimoku cloud, emphasizing potential downside risks.</li>
+            
+              <li>Sentiment from the news is generally positive according to S, while social media and congressional influences are minimal.</li>
+            
+              <li>Price volatility is moderate to high across analyses, suggesting that the investment environment is unpredictable.</li>
+            
+              <li>Technical analysis (T) shows slight bullish momentum while Ichimoku (I) indicates a bearish trend.</li>
+            
+              <li>F&#39;s positive investment outlook contrasts with I&#39;s bearish bias and O&#39;s conflicting bullish statement.</li>
+            
+              <li>The Ichimoku cloud suggests a potential downside, while O indicates bullish potential due to resistance levels at $260.</li>
+            
+              <li>O finds strong resistance while T notes caution due to lack of EMA alignment, leading to mixed trend signals.</li>
+            
+              <li>Verify the alignment in technical indicators for clearer trend confirmation.</li>
+            
+              <li>Monitor Amazon&#39;s resistance levels, especially around $260, as potential breakout triggers.</li>
+            
+              <li>Assess macroeconomic conditions impacting Amazon&#39;s volatility to better gauge investment timing.</li>
+            
+          </ul>
+        </div>
+      
+    </section>
+    <!-- chart -->
+    <section id="chart" class="sect">
+      <h3>📈 Price & Indicators</h3>
+      <div class="chart">
+        
+        
+          <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="a9fa1df7-608a-41c8-a626-23480f60ab94" class="plotly-graph-div" style="height:480px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("a9fa1df7-608a-41c8-a626-23480f60ab94")) {                    Plotly.newPlot(                        "a9fa1df7-608a-41c8-a626-23480f60ab94",                        [{"close":{"dtype":"f8","bdata":"AAAAgD1SakAAAADgozhqQAAAAKBHmWpAAAAA4KO4akAAAAAAAKhrQAAAAMDMNG1AAAAAACnMbUAAAADgevxtQAAAAOCjIG9AAAAAAAAQb0AAAABgZjZvQAAAAIDrUW9AAAAAwPUIb0AAAADAHj1vQAAAACCF629AAAAAYI\u002fib0AAAAAA139wQAAAAIDrUXBAAAAAQDM7cEAAAADgo3BwQAAAAMD1kHBAAAAAACnEcEAAAADAzABxQAAAAMDMGHFAAAAAANcvcUAAAABguPJwQAAAAEDhCnFAAAAAANfPcEAAAADAHp1wQAAAAIAU4nBAAAAAIIWzcEAAAACAPYJwQAAAAIDCjXBAAAAAoHA1cEAAAAAAKZBwQAAAACBcx3BAAAAAwB6lcEAAAADgo5RwQAAAAKCZ\u002fXBAAAAAAAAgcUAAAACAPepwQAAAAAApVHBAAAAA4FEIcEAAAADgo0BvQAAAAKBHuW9AAAAAwPXAbkAAAABACqduQAAAAIAUhm5AAAAAAADAbUAAAADgUTBuQAAAAKCZ0W1AAAAA4KPAbkAAAAAAAMBuQAAAAAAAsG1AAAAA4HqMbkAAAACgRxltQAAAACCFQ21AAAAA4KNIbUAAAADgUWBsQAAAAIAUFm1AAAAA4HoEbkAAAABA4cptQAAAAGBmNm5AAAAAoHBVbkAAAADAHoVuQAAAACBcv25AAAAAANdzbkAAAACgR+FuQAAAAEDhqm5AAAAAgOvpbkAAAAAgru9uQAAAAGC43m9AAAAA4Ho8b0AAAAAgXOduQAAAACCuP29AAAAAoJnxbkAAAABAM5tuQAAAAMAeNW1AAAAAIIUDbUAAAADgeuxsQAAAACCF22xAAAAAwMxUbEAAAAAAAHBtQAAAAKBH+XBAAAAA4FHAcUAAAABguFZxQAAAAGBmCnFAAAAAACkEcUAAAAAgridxQAAAAKBwYXFAAAAA4FEEcUAAAADgerRwQAAAAIAUknBAAAAAYGZqcEAAAADA9VRwQAAAAEAzN3BAAAAAoHCdcEAAAACAwkFwQAAAAIAUKnBAAAAAwB5hcEAAAADA9VBwQAAAAOB6RHBAAAAAACkEcEAAAABA4aZwQAAAAOBRPHBAAAAAoHDdb0AAAAAgXN9vQAAAAGBmLnBAAAAAACkocEAAAAAghQ9wQAAAAMDMjG9AAAAA4Hp8b0AAAADgegxwQAAAAKBHsW9AAAAAoHANb0AAAABguL5uQAAAAIAUZm9AAAAAYLi2b0AAAABAMydwQAAAACBc329AAAAA4KMob0AAAAAAKSxvQAAAAKBwNW9AAAAAwMzEbkAAAACgcNVuQAAAAMDMJG9A"},"high":{"dtype":"f8","bdata":"AAAAYI+yakAAAABguIZqQAAAAGBmnmpAAAAAQAq\u002fakAAAABAM0NsQAAAAKCZOW1AAAAAgMINbkAAAAAAAABuQAAAAIDChW9AAAAAgBROb0AAAAAAAEBvQAAAAEDhAnBAAAAAgMJFb0AAAABA4eJvQAAAAIAU\u002fm9AAAAA4KMscEAAAAAAAIhwQAAAAGBmgnBAAAAA4HpQcEAAAABgj55wQAAAAIAUHnFAAAAAwB4VcUAAAACgmUFxQAAAAMD1aHFAAAAAwMxccUAAAACAFEpxQAAAAAAAIHFAAAAAgBQacUAAAABgZrpwQAAAACCF63BAAAAA4HrscEAAAACAwoVwQAAAAKCZzXBAAAAAAABkcEAAAACgR5lwQAAAAADX13BAAAAA4KPccEAAAADAzNRwQAAAAGCPBnFAAAAAAAAocUAAAAAAACxxQAAAAIAUqnBAAAAAQDNTcEAAAACgcBFwQAAAAGCP+m9AAAAAgBQGcEAAAACgcC1vQAAAAIDCTW9AAAAAgD2CbkAAAADgekRuQAAAACCFa25AAAAAgOv5bkAAAADgUTBvQAAAAMAevW5AAAAAIFy3bkAAAAAAAEBuQAAAAADXm21AAAAAoHBNbkAAAACAPQptQAAAAMDMPG1AAAAAYLg2b0AAAACgRzFuQAAAAMDMnG5AAAAAQArXbkAAAACgR8FuQAAAAIDCHW9AAAAAoJmZbkAAAAAAAPBuQAAAAMD1YG9AAAAAwMw0b0AAAACA6xFvQAAAACCuB3BAAAAAoEchcEAAAAAgrkdvQAAAAOB6nG9AAAAAQOEqb0AAAABgZg5vQAAAAEAzy21AAAAAYGZebUAAAADgenxtQAAAACCFI21AAAAAgD0abUAAAACAPfptQAAAACCuE3FAAAAAQDPzcUAAAADAHpFxQAAAAOCjrHFAAAAAIK43cUAAAADA9WRxQAAAAIA9gnFAAAAAoHBtcUAAAAAgXBdxQAAAAKBH2XBAAAAAwPWccEAAAAAAAJxwQAAAAEDhYnBAAAAAYGamcEAAAACgcH1wQAAAAKBwUXBAAAAAwB51cEAAAACAPX5wQAAAAMDMYHBAAAAAYI86cEAAAADA9bhwQAAAAIDChXBAAAAAgD36b0AAAAAA1wNwQAAAAAAAOHBAAAAAgOtRcEAAAAAA1x9wQAAAAIAU1m9AAAAAwMykb0AAAACgcBlwQAAAAGBm\u002fm9AAAAA4KOob0AAAADgUShvQAAAACBcl29AAAAAgMLtb0AAAAAA1zdwQAAAAAAAMHBAAAAAIK6\u002fb0AAAACAwk1vQAAAAAApXG9AAAAA4KP4bkAAAABA4RpvQAAAAIAUjm9A"},"low":{"dtype":"f8","bdata":"AAAAgBQGakAAAADAzJxpQAAAAEDhMmpAAAAAYI8iakAAAAAA13NrQAAAAOCj6GtAAAAAYLhmbUAAAAAAAHhtQAAAAMD1OG5AAAAAYGbmbkAAAABgZoZuQAAAACCFQ29AAAAAANerbkAAAABAMyNvQAAAAGCPSm9AAAAAgD2ib0AAAABAChtwQAAAAKBwRXBAAAAAgBQKcEAAAABAMxtwQAAAAGCPAnBAAAAAANdrcEAAAADAzMxwQAAAAIAUBnFAAAAAIFwDcUAAAAAA1+dwQAAAAEAz33BAAAAAIK7HcEAAAACAFGpwQAAAAEAzc3BAAAAAgBSqcEAAAACAPU5wQAAAAOB6aHBAAAAAgBTmb0AAAADgejhwQAAAAIDrVXBAAAAAANejcEAAAADAHmFwQAAAAEAzm3BAAAAAQAq3cEAAAACAPdpwQAAAAEAzS3BAAAAAANfLb0AAAABguPZuQAAAAAAAeG9AAAAAwPW4bkAAAAAghWtuQAAAAMDMDG5AAAAAYGaubUAAAACAwmVtQAAAAEDhMm1AAAAAIFyXbkAAAABgZq5uQAAAAAAAgG1AAAAA4KOAbUAAAAAgrgdtQAAAAAAAAG1AAAAAYGYebUAAAACgmTFsQAAAAAApRGxAAAAAoJk5bUAAAACgcKVtQAAAAMDMXG1AAAAAYI8ibkAAAAAAKRxuQAAAAGBmVm5AAAAA4KMQbkAAAAAAAMhtQAAAAMAejW5AAAAAgMKFbkAAAACgmXluQAAAAAAAOG9AAAAAAAAAb0AAAABA4XJuQAAAAAAAAG9AAAAAoHDNbkAAAABgZk5uQAAAAKCZAW1AAAAAQOHqbEAAAAAgrt9sQAAAAEAzg2xAAAAAwB5FbEAAAACA6+FsQAAAAAApYHBAAAAAAABgcUAAAADAHj1xQAAAACCu63BAAAAAwPXwcEAAAAAAAAxxQAAAAKCZGXFAAAAAgML1cEAAAACgmbFwQAAAACBci3BAAAAAYLhmcEAAAACgcCVwQAAAACCuG3BAAAAAoEcpcEAAAADgUThwQAAAAOCjEHBAAAAAwMwwcEAAAACgRz1wQAAAAADXI3BAAAAA4KPgb0AAAADgehxwQAAAAIDrEXBAAAAAgMJ9b0AAAADAzKxvQAAAAAAAAHBAAAAAoEfpb0AAAAAAANhvQAAAAMDMVG9AAAAAYI8yb0AAAADgeqRvQAAAACCuV29AAAAAQArnbkAAAACgmYluQAAAACCuJ29AAAAAACl8b0AAAABAM7NvQAAAAMD1uG9AAAAA4FH4bkAAAABAM7NuQAAAAIDC5W5AAAAAIFyXbkAAAADgeqRuQAAAAGCPwm5A"},"name":"AMZN","open":{"dtype":"f8","bdata":"AAAAgBROakAAAACgR9FpQAAAAKCZOWpAAAAAIK5nakAAAACgR\u002flrQAAAACBcJ2xAAAAAoJlpbUAAAABgZq5tQAAAAMD1OG5AAAAAAAAob0AAAADgURBvQAAAACCu329AAAAAgBQmb0AAAABA4eJvQAAAAIAUjm9AAAAA4Hrsb0AAAAAgrj9wQAAAACBcd3BAAAAAgD0mcEAAAAAA1x9wQAAAAGC4EnFAAAAAoEeZcEAAAADAzMxwQAAAAKBHQXFAAAAAgD0OcUAAAADgUTBxQAAAAIAU+nBAAAAAoHDdcEAAAAAgXKtwQAAAAEDhhnBAAAAAYGbScEAAAAAAAGhwQAAAAIDrfXBAAAAA4KNgcEAAAADAzEBwQAAAAAAAeHBAAAAAYI\u002fKcEAAAABACr9wQAAAAGBmonBAAAAA4FEEcUAAAADgo\u002fRwQAAAAOCjpHBAAAAAYI8ScEAAAABgZtZvQAAAAADXo29AAAAA4FHIb0AAAACAwtVuQAAAACBc925AAAAAIIVzbkAAAACAwr1tQAAAAGC4Zm5AAAAA4KOgbkAAAAAAAABvQAAAAMDMnG5AAAAAANcDbkAAAABgjwJuQAAAAKCZEW1AAAAAQDM7bUAAAADgowBtQAAAAGC4ZmxAAAAAQApHbUAAAABAM6ttQAAAAAAA+G1AAAAAIIUzbkAAAACgmXluQAAAACBc325AAAAA4KOIbkAAAACAPfptQAAAAKCZMW9AAAAAgMKVbkAAAACgmbFuQAAAAAAAOG9AAAAAANfjb0AAAABguI5uQAAAAOBRGG9AAAAAIIUjb0AAAADgowhvQAAAAOBRiG1AAAAAAClMbUAAAACgcHVtQAAAAEAzG21AAAAAgD2qbEAAAABAMyttQAAAAAAAkHBAAAAA4KNkcUAAAADA9UBxQAAAAKBwmXFAAAAA4FEMcUAAAACA6w1xQAAAAAApIHFAAAAAQAprcUAAAABA4RJxQAAAAADXs3BAAAAAgBSOcEAAAABACpdwQAAAAIAUSnBAAAAAoJlNcEAAAABgj3JwQAAAAADXS3BAAAAAoJk5cEAAAAAAKWhwQAAAAOB6VHBAAAAAIK4zcEAAAADAHiVwQAAAAKBHfXBAAAAAYI\u002fab0AAAADgUchvQAAAAEAzA3BAAAAAwB4xcEAAAABA4QpwQAAAAADXo29AAAAAIIVDb0AAAABA4cJvQAAAAMDMpG9AAAAAIK6Hb0AAAABAMwNvQAAAAIA9Ym9AAAAAoHCdb0AAAABgZgZwQAAAACCF429AAAAAAACgb0AAAADgo8BuQAAAAIDrEW9AAAAAACnUbkAAAABguNZuQAAAAKBH2W5A"},"showlegend":false,"x":["2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-06T00:00:00.000000000","2026-04-07T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-13T00:00:00.000000000","2026-04-14T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-20T00:00:00.000000000","2026-04-21T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-29T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000"],"type":"candlestick","xaxis":"x","yaxis":"y"},{"line":{"color":"#FFA500","width":1},"mode":"lines","name":"EMA20","x":["2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-06T00:00:00.000000000","2026-04-07T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-13T00:00:00.000000000","2026-04-14T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-20T00:00:00.000000000","2026-04-21T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-29T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAgD1SakAYhmFYzU9qQIOF6szMVmpAj6lyPB5gakCmaBJPWH9qQBB3BGZjwWpAAv5AmY4La0CUFs2TQ1NrQHrXS2r3r2tA3DwsYEECbEA1gMZHXVBsQOftCMenmWxAS5ppiQTVbECNyC6zsQ9tQJj+1E9kVW1AWebMLJmTbUBdDWTfCOdtQJGqoyvHKW5A5b4+WNZhbkDDb+OSvJ5uQKTGzf79225APxU0kSodb0D8Q3gJr2NvQI8AeYIOqG9AUfQLdk7qb0AAjU5vTQ1wQLfItORzJXBA40cRGK41cEB4HK4PiD9wQLZWkSYDT3BAjNTYn5VYcEBmRko7jVxwQFzqsPg8YXBAFpcBIRFdcEC\u002fS7jU7mFwQBtpUbeXa3BAhjpuShJxcEDCKD99dXRwQNRhCB+FgXBAIUCyA52QcEDVLRs0JplwQPHHJC+UknBA8nctTGmFcEDDO6\u002fVl29wQO3stvmYYXBALMo3NBxJcEDGbW97uDFwQOSH0jj9GnBAzW8b+fr5b0CVQPTFZM5vQD4u6ebvnW9AgdSJeNyIb0ATtHxIu3VvQJdND+CESm9AJ4O4ims4b0DOv5pDsQRvQE3eQgPq2W5AOU8wkrKzbkBY8vqx\u002fnpuQHTnmcUAWW5AgVcRBfRQbkC+c0AvL0RuQOl0gxvfQm5ANEXM0qNEbkCRe2Ppx0puQC6IuzfiVW5Ai9Dyk7xYbkBZZ0mhvWVuQJrj4E5TbG5A4Qrwa0l4bkAV2YNYqINuQGjEFRC2pG5A2PqlVCqzbkBugevhIrhuQD++f5ILxW5AXnvt3EnJbkAAiIEv5sRuQM+rEzHTnm5ATlJzL6d3bkCckzd9BFJuQFC2DeJZLm5AkoxVQEABbkDyr9\u002fkavNtQJK3HxLcVG5AYDh+Fu\u002fSbkD1b0EO4zBvQHxxCtZad29ATE7AR+y1b0AIUwNHTPVvQFPW1s3RHHBAiKlUAN4ycEC47qEVNj9wQBReSYEaR3BAmPNmEHdKcECKJV3wdktwQFg6kd+ISXBAQ9NekIZRcECSmkktBlBwQGDtlxBpTHBASzi6\u002fGFOcECBV1\u002fSoE5wQOK89GWpTXBACfQ+XKlGcEBqxCxB009wQJ0r07H3TXBAFA+\u002fd+VEcEBPuGPPxzxwQFTLfjJpO3BAcVZa2JM5cEA1TnZxkjVwQG3x5PX7KnBArKkwrKAgcEA6Byx0tR5wQJbJZBsJGHBAGiSYLDIKcEBsx7EQ2vNvQBlfAolZ5m9AkbcmSNDhb0BfOC+7J+xvQAEzycTv6m9AGWvOom7Yb0B4het6BshvQDwX1ZYQum9AEtiDy7Sib0B+wxU1KI9vQIpbvh0HhW9A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#00FF00","width":1},"mode":"lines","name":"EMA50","x":["2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-06T00:00:00.000000000","2026-04-07T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-13T00:00:00.000000000","2026-04-14T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-20T00:00:00.000000000","2026-04-21T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-29T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAgD1SakC\u002fvr5+PFFqQGfaTcEPVGpAw707fAFYakBIrH+aLmVqQG6MXABngWpA8Yv5oHOiakAfMV6PGcRqQN3ZtL\u002fi72pAXNvGTk0Za0D5CbqVmUJrQG3h1Ypba2tAquw73aePa0CAAahtk7RrQJkpYC7j3mtAL19XNTAHbEDJsBIGFzlsQMGQrd1uZWxAKJ+DXEGObEBZBxAGq7lsQPbtlsnp5WxAfsFPYnAUbUAL3Yhy5UVtQAZ6fuFLd21AndTJ+5CobUBg5bxEHNNtQJ4YUYjh\u002fW1AnQ1x+1cibkDd1aMAZkFuQPNFet2kZG5AdoR\u002fCduCbkBYk4lyBJxuQNfTKYwYtW5A9zkyjkPGbkBc4tC6391uQAhmfTPj+G5A70hG\u002fycQb0AsXxtNOCVvQCUQ3pKwQW9AQs5Iur1fb0AivA7HZXhvQJSHbexQhG9AAkFuqdGJb0Cja+cA84ZvQOPfZUjsiG9AXRiZzxSBb0DcigbZh3hvQLHLiNUFb29A7PoPtB5eb0BgPPHdSFJvQD52l+8yQ29AZDpGOhQ+b0BbeUN+IjlvQEkkkbq3KW9AHmR8L40jb0CMuq78EQ9vQEvCiXYM\u002fW5APkx1Q+\u002frbkAZId+PYdJuQAlc0SD1wG5AkHse9pC5bkA19Me8NLBuQGWuUeZtq25AYXpOog6obkD01Lnkr6ZuQGOVvJanp25AHiaraJ+lbkAEib1R9qduQNy6VpwTqG5AFUA\u002foKiqbkAFsSiMXa1uQFDm9BFXuW5AV+yLnHu+bkAn9w38FcBuQE7FZ+4WxW5AVYExyNXGbkD4MNC4H8VuQHudXv9vtW5AuAB0zmukbkAvfnkkK5NuQJzYkmrtgW5AoFLJShRsbkDv2y+dMWJuQEXJ+wz5hW5AOJmhtPW3bkDrR6BBtN9uQPEcuGnn\u002f25AGmczBloeb0B0x5UmZD5vQAEfx1m0YW9A\u002fE+\u002fU1R8b0A+sZnzpY9vQMgnEe+Cn29Au6g98qOrb0AJjou2nLVvQAkai9fbvG9A3PDQCNfLb0DybngIC9NvQNChX0Qb2G9Am744yUnhb0D1iTuo1+hvQKCYnRwf729AXkx5Fhzwb0D75M5M0v1vQLonJ6ZRAXBAkIoR7pYAcEAQ2ERX2v9vQBKuPLq\u002fAXBAP6eUWEEDcEDTw395vANwQGsCvLRUAXBAg+EEVWb9b0BgjeEDe\u002f5vQBvO8fpz+29AmFftgx7yb0B0n3p4EOZvQN5D6ZsL4W9A2+aosmLfb0DE0y4zveNvQPRIeDyR429AMV9Bojzcb0Dpzj72VNVvQNHLr8UPz29AtaVntp7Eb0Aii1mIPbtvQBLqNzpXtW9A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#ff7f0e","width":1},"mode":"lines","name":"Tenkan","opacity":0.9,"x":["2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-06T00:00:00.000000000","2026-04-07T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-13T00:00:00.000000000","2026-04-14T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-20T00:00:00.000000000","2026-04-21T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-29T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAKBHkWxAAAAAoEeRbEAAAADwKNRsQAAAAPAoFG1AAAAAwMy8bUAAAAAwM\u002fdtQAAAAHA9tm5AAAAA4KPobkAAAADgeqRvQAAAADAzy29AAAAAMDPLb0AAAADgevRvQAAAAAAAOnBAAAAAENdXcEAAAACocHNwQAAAAEAKnXBAAAAAkMK1cEAAAACQwrVwQAAAAJDCtXBAAAAAkMK1cEAAAACQwrVwQAAAACCF6XBAAAAAIIXpcEAAAACgmdtwQAAAACCF1XBAAAAAYI+ecEAAAAAghYlwQAAAAGCPhnBAAAAAkMJvcEAAAACQwm9wQAAAANDMfHBAAAAAIIWNcEAAAAAghY9wQAAAACCFj3BAAAAAwPWIcEAAAAAYrlNwQAAAABiuU3BAAAAAcD1EcEAAAABI4TBwQAAAADAzGXBAAAAAmJkBcEAAAADA9VxvQAAAAOCj7G5AAAAAQOGqbkAAAAAghZ9uQAAAACCFn25AAAAA4FFAbkAAAABQuCpuQAAAAPAoGG5AAAAA8CgYbkAAAADA9bBtQAAAAMD1sG1AAAAAACm0bUAAAAAAKbRtQAAAAAAptG1AAAAAACm0bUAAAAAAKbRtQAAAAAAptG1AAAAAACm0bUAAAACwcL1tQAAAALBHTW5AAAAAQOFebkAAAABA4V5uQAAAACCu625AAAAAoEcFb0AAAACgRwVvQAAAAKBHBW9AAAAAoEcFb0AAAADQekhvQAAAAHAUom5AAAAAQLiWbkAAAACwHpFuQAAAAEDhYm5AAAAA0MzwbUAAAADQzPBtQAAAAIA9Nm9AAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAgBQycEAAAAAgrilxQAAAALBHP3FAAAAAIK4JcUAAAABACulwQAAAAND1znBAAAAA0PXOcEAAAADQ9c5wQAAAAEAKv3BAAAAAAACUcEAAAADA9XRwQAAAACCFW3BAAAAAKFxLcEAAAADYo1RwQAAAANijVHBAAAAAgOs7cEAAAACA6ztwQAAAAIDrO3BAAAAAgOs7cEAAAACA6ztwQAAAABCuMXBAAAAAuB4pcEAAAAAYhQ9wQAAAADAz629AAAAAoHDFb0AAAABQuJZvQAAAAFC4lm9AAAAA0KNkb0AAAADQo3xvQAAAANCjfG9AAAAA0KN8b0AAAADQo3xvQAAAANCjfG9AAAAA0KN8b0AAAAAQhYNvQAAAABCFg29A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#1f77b4","width":1},"mode":"lines","name":"Kijun","opacity":0.9,"x":["2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-06T00:00:00.000000000","2026-04-07T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-13T00:00:00.000000000","2026-04-14T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-20T00:00:00.000000000","2026-04-21T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-29T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAgXDduQAAAACBcN25AAAAAcD16bkAAAABwPXpuQAAAAEDhIm9AAAAAsEddb0AAAAD4KA5wQAAAAOB6EnBAAAAAULhCcEAAAAB4FFZwQAAAAHgUVnBAAAAAoHBfcEAAAACgcF9wQAAAALBHfXBAAAAAuB6HcEAAAABACp1wQAAAAAAArnBAAAAAoHCncEAAAAD4KHJwQAAAAPgocnBAAAAAULhicEAAAAAoXE9wQAAAABCuN3BAAAAAeBQgcEAAAAAA1wdwQAAAACCF429AAAAAoHDFb0AAAACgcMVvQAAAAKBwxW9AAAAAoHDFb0AAAAAQ169vQAAAAAAArG9AAAAAAACsb0AAAADQzERvQAAAANDMRG9AAAAA0MxEb0AAAADQzERvQAAAANDMRG9AAAAA0MxEb0AAAADQzERvQAAAANDMRG9AAAAAUOHCbkAAAAAQAGxuQAAAAHA9Km5AAAAAUOEebkAAAABQ4R5uQAAAAPB6IG5AAAAAcBQ6bkAAAABwFDpuQAAAAHAUOm5AAAAAcBQ6bkAAAABwFDpuQAAAAHAUOm5AAAAAcBQ6bkAAAABwFDpuQAAAAHAUOm5AAAAAcBQ6bkAAAABwFDpuQAAAAPB6LG9AAAAA4KMKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAIAUMnBAAAAAQArZcEAAAABACtlwQAAAACCFq3BAAAAAyPWicEAAAACYwo1wQAAAAJjCjXBAAAAAUOF6cEAAAAC4HllwQAAAAHgULnBAAAAAOAoPcEAAAACQwv1vQAAAAJDC\u002fW9AAAAAkML9b0AAAACQwv1vQAAAAJDC\u002fW9AAAAAkML9b0AAAACQwv1vQAAAAJDC\u002fW9A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#2ca02c","width":1},"mode":"lines","name":"Span A","opacity":0.7,"x":["2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-05-02T00:00:00.000000000","2026-05-03T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-09T00:00:00.000000000","2026-05-10T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-16T00:00:00.000000000","2026-05-17T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-23T00:00:00.000000000","2026-05-24T00:00:00.000000000","2026-05-25T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-30T00:00:00.000000000","2026-05-31T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-26T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAACgcNFvQAAAAKBw0W9AAAAASOHyb0AAAABI4fJvQAAAAOB6PXBAAAAAfBRMcEAAAABM4XRwQAAAAAAAdHBAAAAA2KNwcEAAAADMzG9wQAAAAOxRbnBAAAAAmJlncEAAAACYmWdwQAAAAEAKfXBAAAAA7FGKcEAAAACwR5ZwQAAAAJDCnnBAAAAAMDOYcEAAAACI62JwQAAAAIjrYnBAAAAA4HpTcEAAAAC4HkBwQAAAAKBwKHBAAAAACNcQcEAAAADgUbZvQAAAAIAUaG9AAAAA8Cg4b0AAAADgejJvQAAAAOB6Mm9AAAAAQOECb0AAAACwR+1uQAAAAHgU4m5AAAAAeBTibkAAAABI4XpuQAAAAEjhem5AAAAA6Hp8bkAAAADoenxuQAAAAOh6fG5AAAAA6Hp8bkAAAADoenxuQAAAAOh6fG5AAAAAKIU7bkAAAABguBRuQAAAAJDCO25AAAAASOE+bkAAAABI4T5uQAAAAIgUhm5AAAAACK6fbkAAAAAIrp9uQAAAAAiun25AAAAACK6fbkAAAACgR8FuQAAAAHAUbm5AAAAAWGZobkAAAACQmWVuQAAAANh6Tm5AAAAAoHAVbkAAAACgcBVuQAAAADhcMW9AAAAAmMIKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAA6HoecEAAAAC4R5pwQAAAAIAUpXBAAAAAuEeKcEAAAADI9XlwQAAAAJDrbHBAAAAAkOtscEAAAACQ62xwQAAAAMj1ZHBAAAAAqHBPcEAAAACI6z9wQAAAADgzM3BAAAAAvB4rcEAAAACUwi9wQAAAAJTCL3BAAAAAaGYjcEAAAABoZiNwQAAAAAAAN3BAAAAA4HqKcEAAAADgeopwQAAAAJiZbnBAAAAAQApmcEAAAADYo05wQAAAABiuQXBAAAAA0MwucEAAAABwPRJwQAAAAKBw+W9AAAAAIFzBb0AAAAAwM71vQAAAADAzvW9AAAAAMDO9b0AAAAAwM71vQAAAADAzvW9AAAAAMDO9b0AAAADQo8BvQAAAANCjwG9A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#d62728","width":1},"mode":"lines","name":"Span B","opacity":0.7,"x":["2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-05-02T00:00:00.000000000","2026-05-03T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-09T00:00:00.000000000","2026-05-10T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-16T00:00:00.000000000","2026-05-17T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-23T00:00:00.000000000","2026-05-24T00:00:00.000000000","2026-05-25T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-30T00:00:00.000000000","2026-05-31T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-26T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAIFw3bkAAAAAgXDduQAAAAHA9em5AAAAAcD16bkAAAABA4SJvQAAAALBHXW9AAAAAwPXob0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkJl1b0AAAABQ4WJvQAAAANDMRG9AAAAA0MxEb0AAAADQzERvQAAAANDMRG9AAAAA0MxEb0AAAADQzERvQAAAANDMRG9AAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAOCjCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBA"},"type":"scatter","xaxis":"x","yaxis":"y"},{"fill":"toself","fillcolor":"rgba(111, 168, 220, 0.2)","hoverinfo":"skip","line":{"width":0},"name":"Cloud","showlegend":true,"x":["2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-05-02T00:00:00.000000000","2026-05-03T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-09T00:00:00.000000000","2026-05-10T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-16T00:00:00.000000000","2026-05-17T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-23T00:00:00.000000000","2026-05-24T00:00:00.000000000","2026-05-25T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-30T00:00:00.000000000","2026-05-31T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-05-31T00:00:00.000000000","2026-05-30T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-25T00:00:00.000000000","2026-05-24T00:00:00.000000000","2026-05-23T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-17T00:00:00.000000000","2026-05-16T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-10T00:00:00.000000000","2026-05-09T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-03T00:00:00.000000000","2026-05-02T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-27T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAACgcNFvQAAAAKBw0W9AAAAASOHyb0AAAABI4fJvQAAAAOB6PXBAAAAAfBRMcEAAAABM4XRwQAAAAAAAdHBAAAAA2KNwcEAAAADMzG9wQAAAAOxRbnBAAAAAmJlncEAAAACYmWdwQAAAAEAKfXBAAAAA7FGKcEAAAACwR5ZwQAAAAJDCnnBAAAAAMDOYcEAAAACI62JwQAAAAIjrYnBAAAAA4HpTcEAAAAC4HkBwQAAAAKBwKHBAAAAACNcQcEAAAADgUbZvQAAAAIAUaG9AAAAA8Cg4b0AAAADgejJvQAAAAOB6Mm9AAAAAQOECb0AAAACwR+1uQAAAAHgU4m5AAAAAeBTibkAAAABI4XpuQAAAAEjhem5AAAAA6Hp8bkAAAADoenxuQAAAAOh6fG5AAAAA6Hp8bkAAAADoenxuQAAAAOh6fG5AAAAAKIU7bkAAAABguBRuQAAAAJDCO25AAAAASOE+bkAAAABI4T5uQAAAAIgUhm5AAAAACK6fbkAAAAAIrp9uQAAAAAiun25AAAAACK6fbkAAAACgR8FuQAAAAHAUbm5AAAAAWGZobkAAAACQmWVuQAAAANh6Tm5AAAAAoHAVbkAAAACgcBVuQAAAADhcMW9AAAAAmMIKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAA6HoecEAAAAC4R5pwQAAAAIAUpXBAAAAAuEeKcEAAAADI9XlwQAAAAJDrbHBAAAAAkOtscEAAAACQ62xwQAAAAMj1ZHBAAAAAqHBPcEAAAACI6z9wQAAAADgzM3BAAAAAvB4rcEAAAACUwi9wQAAAAJTCL3BAAAAAaGYjcEAAAABoZiNwQAAAAAAAN3BAAAAA4HqKcEAAAADgeopwQAAAAJiZbnBAAAAAQApmcEAAAADYo05wQAAAABiuQXBAAAAA0MwucEAAAABwPRJwQAAAAKBw+W9AAAAAIFzBb0AAAAAwM71vQAAAADAzvW9AAAAAMDO9b0AAAAAwM71vQAAAADAzvW9AAAAAMDO9b0AAAADQo8BvQAAAANCjwG9AAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAAUOEKcEAAAABQ4QpwQAAAAFDhCnBAAAAA4KMKcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAACAAGcEAAAAAIAAZwQAAAAAgABnBAAAAA0MxEb0AAAADQzERvQAAAANDMRG9AAAAA0MxEb0AAAADQzERvQAAAANDMRG9AAAAA0MxEb0AAAABQ4WJvQAAAAJCZdW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAJDCgW9AAAAAkMKBb0AAAACQwoFvQAAAAMD16G9AAAAAsEddb0AAAABA4SJvQAAAAHA9em5AAAAAcD16bkAAAAAgXDduQAAAACBcN25AAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002f"},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#9467bd","width":1},"mode":"lines","name":"Chikou","opacity":0.8,"x":["2026-03-06T00:00:00.000000000","2026-03-07T00:00:00.000000000","2026-03-11T00:00:00.000000000","2026-03-12T00:00:00.000000000","2026-03-13T00:00:00.000000000","2026-03-14T00:00:00.000000000","2026-03-15T00:00:00.000000000","2026-03-18T00:00:00.000000000","2026-03-19T00:00:00.000000000","2026-03-20T00:00:00.000000000","2026-03-21T00:00:00.000000000","2026-03-22T00:00:00.000000000","2026-03-25T00:00:00.000000000","2026-03-26T00:00:00.000000000","2026-03-27T00:00:00.000000000","2026-03-28T00:00:00.000000000","2026-03-29T00:00:00.000000000","2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-03T00:00:00.000000000","2026-04-04T00:00:00.000000000","2026-04-05T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-11T00:00:00.000000000","2026-04-12T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-18T00:00:00.000000000","2026-04-19T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-25T00:00:00.000000000","2026-04-26T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-02T00:00:00.000000000","2026-05-03T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-09T00:00:00.000000000","2026-05-10T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-16T00:00:00.000000000","2026-05-17T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-23T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-05-30T00:00:00.000000000","2026-05-31T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-19T00:00:00.000000000","2026-06-20T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-03T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAgD1SakAAAADgozhqQAAAAKBHmWpAAAAA4KO4akAAAAAAAKhrQAAAAMDMNG1AAAAAACnMbUAAAADgevxtQAAAAOCjIG9AAAAAAAAQb0AAAABgZjZvQAAAAIDrUW9AAAAAwPUIb0AAAADAHj1vQAAAACCF629AAAAAYI\u002fib0AAAAAA139wQAAAAIDrUXBAAAAAQDM7cEAAAADgo3BwQAAAAMD1kHBAAAAAACnEcEAAAADAzABxQAAAAMDMGHFAAAAAANcvcUAAAABguPJwQAAAAEDhCnFAAAAAANfPcEAAAADAHp1wQAAAAIAU4nBAAAAAIIWzcEAAAACAPYJwQAAAAIDCjXBAAAAAoHA1cEAAAAAAKZBwQAAAACBcx3BAAAAAwB6lcEAAAADgo5RwQAAAAKCZ\u002fXBAAAAAAAAgcUAAAACAPepwQAAAAAApVHBAAAAA4FEIcEAAAADgo0BvQAAAAKBHuW9AAAAAwPXAbkAAAABACqduQAAAAIAUhm5AAAAAAADAbUAAAADgUTBuQAAAAKCZ0W1AAAAA4KPAbkAAAAAAAMBuQAAAAAAAsG1AAAAA4HqMbkAAAACgRxltQAAAACCFQ21AAAAA4KNIbUAAAADgUWBsQAAAAIAUFm1AAAAA4HoEbkAAAABA4cptQAAAAGBmNm5AAAAAoHBVbkAAAADAHoVuQAAAACBcv25AAAAAANdzbkAAAACgR+FuQAAAAEDhqm5AAAAAgOvpbkAAAAAgru9uQAAAAGC43m9AAAAA4Ho8b0AAAAAgXOduQAAAACCuP29AAAAAoJnxbkAAAABAM5tuQAAAAMAeNW1AAAAAIIUDbUAAAADgeuxsQAAAACCF22xAAAAAwMxUbEAAAAAAAHBtQAAAAKBH+XBAAAAA4FHAcUAAAABguFZxQAAAAGBmCnFAAAAAACkEcUAAAAAgridxQAAAAKBwYXFAAAAA4FEEcUAAAADgerRwQAAAAIAUknBAAAAAYGZqcEAAAADA9VRwQAAAAEAzN3BAAAAAoHCdcEAAAACAwkFwQAAAAIAUKnBAAAAAwB5hcEAAAADA9VBwQAAAAOB6RHBAAAAAACkEcEAAAABA4aZwQAAAAOBRPHBAAAAAoHDdb0AAAAAgXN9vQAAAAGBmLnBAAAAAACkocEAAAAAghQ9wQAAAAMDMjG9AAAAA4Hp8b0AAAADgegxwQAAAAKBHsW9AAAAAoHANb0AAAABguL5uQAAAAIAUZm9AAAAAYLi2b0AAAABAMydwQAAAACBc329AAAAA4KMob0AAAAAAKSxvQAAAAKBwNW9AAAAAwMzEbkAAAACgcNVuQAAAAMDMJG9A"},"type":"scatter","xaxis":"x","yaxis":"y"},{"marker":{"color":["#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a"]},"name":"Volume","showlegend":false,"x":["2026-04-01T00:00:00.000000000","2026-04-02T00:00:00.000000000","2026-04-06T00:00:00.000000000","2026-04-07T00:00:00.000000000","2026-04-08T00:00:00.000000000","2026-04-09T00:00:00.000000000","2026-04-10T00:00:00.000000000","2026-04-13T00:00:00.000000000","2026-04-14T00:00:00.000000000","2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-20T00:00:00.000000000","2026-04-21T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-27T00:00:00.000000000","2026-04-28T00:00:00.000000000","2026-04-29T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-04T00:00:00.000000000","2026-05-05T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAQMrphUEAAACA9P59QQAAAMChNXhBAAAAgK7ZekEAAADg5lyIQQAAAEBFdI9BAAAAAF0ji0EAAADAPRuEQQAAACBXVJFBAAAAgIqGhEEAAACgOPqDQQAAAKA7z4hBAAAA4EXRgkEAAAAAjXeEQQAAAGB6MoFBAAAAQOajgkEAAADAn6SJQQAAAIDJaYVBAAAAgOcfhEEAAABw\u002fECRQQAAANAEE5hBAAAAgD88iEEAAACgqWeHQQAAAKDI+4NBAAAAAHo+hUEAAAAgdR2BQQAAAODUj4BBAAAA4D00gkEAAABASImBQQAAAKCj6oJBAAAAAPrifUEAAADg13CDQQAAAIClEIBBAAAA4GY8g0EAAACATqiAQQAAAKDCcoFBAAAAwIhCekEAAAAgGiKCQQAAAGBeGoNBAAAAAMRfg0EAAAAATRuKQQAAAICBj4lBAAAAwOHvg0EAAADAtIGIQQAAAEDm+oBBAAAAwA+EikEAAABgHyqAQQAAAMAFL4VBAAAAwLdmgkEAAABA07WDQQAAAEBdaIhBAAAAgL\u002fjg0EAAABAVseAQQAAAABoWoVBAAAAQL8HkkEAAABQGk6QQQAAAMBZ2IxBAAAAoLXBkEEAAADQ2YSSQQAAAAi3m61BAAAAAICBkkEAAABggpSPQQAAAGAIq4lBAAAAAHQBh0EAAAAALxiDQQAAAICQWYNBAAAAgIBHfEEAAACg3SmCQQAAAAAHMH5BAAAAIAqEgEEAAABAnLZ8QQAAAMCIkoVBAAAAoB6fhUEAAACA5caEQQAAAEC+535BAAAAQIhyekEAAADgJUSAQQAAAKAaooZBAAAAwJWygEEAAABgZrCAQQAAAADEOoVBAAAA4PlvhUEAAADgzkeYQQAAAEDhxJ5BAAAA4NWnlUEAAAAQFqGQQQAAAMDJg4VBAAAAQIBAfUEAAADAeCWAQQAAAODNCYFBAAAAQAlrfkEAAADA1o18QQAAAIANrn5BAAAAQD\u002f9eUEAAACgde6EQQAAAEB2on9BAAAAAIcNgUEAAABARQ97QQAAAMC3CIFBAAAAQCbFekEAAACA1114QQAAAAD1h3RBAAAAwLchgUEAAABARKCHQQAAAMAl+oVBAAAAQEg7fkEAAABAn+Z2QQAAAMBOpXlBAAAAwExTfUEAAAAAPwl8QQAAAMAwhn9BAAAAAOBNeEEAAABAcHx5QQAAAAB1YYBBAAAAQCZMgUEAAABA5+9\u002fQQAAAABZB31BAAAAYDDtiEEAAABAgn6EQQAAAEDUBIRBAAAAgKEUhUEAAABAboJ\u002fQQAAAOCaVoBBAAAAwC0Wf0EAAAAAexWAQQAAACCt8YNB"},"type":"bar","xaxis":"x2","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x2","showticklabels":false,"rangeslider":{"visible":false},"title":{"text":""},"fixedrange":true},"yaxis":{"anchor":"x","domain":[0.33499999999999996,0.9999999999999999],"title":{"text":"Price"},"fixedrange":true},"xaxis2":{"anchor":"y2","domain":[0.0,1.0]},"yaxis2":{"anchor":"x2","domain":[0.0,0.285],"title":{"text":"Volume"},"fixedrange":true},"shapes":[{"fillcolor":"rgba(96,165,250,0.2)","layer":"below","line":{"width":0},"type":"rect","x0":"2026-09-29T00:00:00","x1":"2026-10-05T00:00:00","xref":"x domain","y0":233.71,"y1":259.84,"yref":"y"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":233.71,"y1":233.71,"yref":"y"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":259.84,"y1":259.84,"yref":"y"},{"line":{"color":"#f59e0b","dash":"dash","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":246.79,"y1":246.79,"yref":"y"}],"annotations":[{"showarrow":false,"text":"5-Day ±1σ (option-implied)","x":0,"xanchor":"left","xref":"x domain","y":259.84,"yanchor":"top","yref":"y"},{"showarrow":false,"text":"Session open (anchor) — close +0.96% from band centre","x":0,"xanchor":"left","xref":"x domain","y":246.79,"yanchor":"top","yref":"y"}],"font":{"size":13},"margin":{"l":48,"r":16,"t":44,"b":36},"autosize":true,"title":{"text":"AMZN — Price Chart"},"dragmode":false,"hovermode":"x unified"},                        {"responsive": true, "scrollZoom": false, "doubleClick": false, "displayModeBar": false, "displaylogo": false}                    )                };            </script>        </div>
+        
+      </div>
+      <div class="small">See the “Trend &amp; Volatility” table for EMA/ATR/momentum details.</div>
+    </section>
+
+    
+    <section id="agents-raw" class="sect">
+      <h3>🧾 Detailed Agent Analyses</h3>
+
+      <div class="grid-3" style="margin-top:10px">
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Fundamental</b>
+              
+              <span class="pill">conf 0.90</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> Amazon exhibits strong profitability and growth potential, indicated by positive EPS, disciplined valuation ratios, and a strategic market position, making it a compelling investment despite no dividend yield.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Positive EPS of 12.43 suggests strong profitability and potential for growth.</li><li>The PE ratio of 20.04 and PEG ratio of 1.478 indicate reasonable valuation compared to growth.</li><li>Analyst target price suggests potential upside, enhancing positive sentiment.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Sentiment</b>
+              
+              <span class="pill">conf 0.70</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> AMZN shows a positive sentiment from recent news coverage with minimal social or congressional influences.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Positive sentiment in recent news articles.</li><li>No significant social media or congressional trading activity.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Technical</b>
+              
+              <span class="pill">conf 0.90</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> AMZN is experiencing slight bullish momentum with moderate volatility. The price is slightly above the center of the option-implied range, indicating potential continuation. EMAs are not aligned for strong uptrend confirmation, suggesting caution.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>RSI is neutral at around 45, indicating neither overbought nor oversold conditions.</li><li>EMA alignment is neutral with EMA20 below EMA50, providing no clear trend confirmation.</li><li>MACD histogram is slightly negative, indicating mild bearish momentum.</li><li>Current price is slightly above the center of the option-implied range, suggesting potential for continuation, but there&#39;s also a near-term resistance at the call wall ($260).</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Ichimoku</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> The price is under a cloud, and there&#39;s a lot of signs it&#39;s going down more. A special line that looks back says prices are lower than before. Another line shows a stronger down push. All of these suggest the trend is weak and likely to keep dropping.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Price is below the cloud, indicating bearish structure.</li><li>Future cloud is bearish, suggesting continued downward momentum.</li><li>Chikou span is below the price, confirming bearish trend.</li><li>Tenkan below kijun shows short-term momentum is bearish.</li><li>No cross signal, indicating continuation of current trend direction.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Options</b>
+              
+              <span class="pill">conf 0.90</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> Call wall $260.00 (0.39σ, 69.8% touch prob) just above — resistance, 29d left</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>IV Percentile 68.8 — options moderately rich vs the last 3 months</li><li>Max pain $250.00 (0.03σ above, 97.6% touch prob), strong influence</li>
+              </ul>
+            
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- forecast + quant -->
+    <section id="forecast" class="sect grid-2">
+      <div class="card">
+        <b>🔮 Expected Range</b>
+        <div class="stat">
+          <span class="chip">IV-skew+ATR</span>
+          <span class="muted">DTE: 30</span>
+        </div>
+        <div style="margin-top:8px">
+          <div><b>Low–High:</b> $233.71–$259.84</div>
+          <div><b>Anchor (session open):</b> $246.79</div>
+          <div><b>Band mid:</b> $246.78 <span class="muted">-0.01% vs session open (flat)</span></div>
+          <div><b>Close vs band centre:</b> +0.96% from band centre (above centre) <span class="muted">-6.20% to low · +4.29% to high</span></div>
+          <div class="small">Inputs: open $246.79, close $249.15, IV30 39.8% (rank 62), ATR14 5.42</div>
+          <div class="small muted">The band is built around the <b>opening price of the 2026-09-30 session</b>, so its centre is a fixed reference rather than today's price. Width comes from option-implied volatility; the 25&Delta; risk reversal makes the two legs asymmetric. It is never shifted by the agents' stance.</div>
+        </div>
+      </div>
+      <div class="card">
+        <b>📊 Trend &amp; Volatility</b>
+        <div class="table-scroll">
+          <table class="tbl rtable">
+            <thead>
+              <tr><th>RSI(14)</th><th>ATR(14)</th><th>EMA20</th><th>EMA50</th><th>EMA200</th><th>1M</th><th>3M</th><th>6M</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="RSI(14)">45.20</td>
+                <td data-label="ATR(14)">5.42</td>
+                <td data-label="EMA20">$252.16</td>
+                <td data-label="EMA50">$253.67</td>
+                <td data-label="EMA200">—</td>
+                <td data-label="1M">-2.3%</td>
+                <td data-label="3M">2.7%</td>
+                <td data-label="6M">18.3%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- options -->
+    <section id="options" class="sect">
+      <h3>🧩 Options: IV, PCR, Dealer Levels</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead>
+            <tr>
+              <th>IV30</th><th>P/C Vol</th><th>P/C OI</th>
+              <th>Call Wall</th><th>Put Wall</th><th>Gamma Flip</th><th>Max Pain</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="IV30">39.8% (rank 62)</td>
+              <td data-label="P/C Vol">0.60</td>
+              <td data-label="P/C OI">0.24</td>
+              <td data-label="Call Wall">$260.00</td>
+              <td data-label="Put Wall">$220.00</td>
+              <td data-label="Gamma Flip">$242.75</td>
+              <td data-label="Max Pain">$250.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small">Source: Finnhub Option Chain API</div>
+    </section>
+
+
+    <!-- short -->
+    <section id="short" class="sect">
+      <h3>📉 Short Interest / Borrow</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead>
+            <tr><th>SI(sh)</th><th>SI% Float</th><th>DTC</th><th>SVR</th><th>Borrow Fee</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="SI(sh)">81,440,000</td>
+              <td data-label="SI% Float">0.8%</td>
+              <td data-label="DTC">2.05</td>
+              <td data-label="SVR">—</td>
+              <td data-label="Borrow Fee">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small">SI/DTC are monthly/bi-monthly figures; SVR is the FINRA daily ratio; borrow fee is a broker estimate.</div>
+    </section>
+
+
+    <!-- news & social -->
+    <section id="news" class="sect">
+      <h3>📰 Recent News</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead><tr><th>Headline</th><th>Source</th><th>Published</th></tr></thead>
+          <tbody>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiggFBVV95cUxQOUU3aFNpc3Q5aGlia0h3eDg3U1JjSHN1Qy1wWEZaZVpnY28tMnhNN3pEc0o3eFVSVFdON1ZtZ05DMC1YaWQtVy1zRjFJcldKZ2Z1clR4Vy1xeXA3RDUxUllXMkZfM1VZT1B5am5KOFNJM3R6MzJzQzBCZTBRcndyQUZB?oc=5">Amazon Stock Has 46% Upside. Muse and Dots Threats Are ‘Overstated.’ - Barron&#39;s</a></td>
+                <td data-label="Source" class="small">Barron&#39;s</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 18:29:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilwFBVV95cUxPNUpkc1hRY3V6azM3QVI1X0lUQWMxOThfSElaNUlWSFExeXkxRGtwS3JVUW01V2w3UEFCNXlBR29SWFBvTWdvYVNxOHcwN3Y1cl9JZGgzcG1lUWJvdU1CRndMUDI3a3BQNjVuLUF1TzNNNHBPSG5ldnNmeTVYZEwxSm9XbFZiZmVFNjM4dXhLZGE3ekUtMnI4?oc=5">How much AMZN stock does Amazon’s founder Jeff Bezos actually own? - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 01:14:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimwFBVV95cUxQZE42dTBWSXRYc3FvRDFYd3ZsSFpicDNHYXdISTJtZDlLUXBlQWlXLTZ3TDNUSWFfNnozSktBXy1lTWp0bEs5VjdnRnJ1aXdkSUc5bDFHX05pVXg4RlVuUDFyMzZZQ2dWMXRzODhBV3FmSENXay1QODBwZUlxTzBfS1BSNTNGOUt5OWF3T1UyTWRKOERBQWQ1eFlsYw?oc=5">Amazon Stock (AMZN) Rallies Almost 2% on New Alexa+ Fire TV Abilities - TipRanks</a></td>
+                <td data-label="Source" class="small">TipRanks</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 13:26:24 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOR3VQS1NHM3lhaFZ1QXVHR3lPb2I5S1hyOVhmX1pWWUNXYXRNUUd5VjZoNTNNdE1rM29Rckx1OVExbVVjbGxLNnpqeUthYVg4MTBHM0pjNmJYR1NIYU5tWVR4YVdqQVBweE1IZ0VVajlHNHBiSkthZGZ5VmNQSk9ValpLU3pjQnpXMUFsUm1qRjBfdC1sS2Q2aUpBU1g0c1BTV3c?oc=5">How Amazon’s stock can fight off the AI threat and soar 46% - MarketWatch</a></td>
+                <td data-label="Source" class="small">MarketWatch</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 13:24:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMioAFBVV95cUxOOUlJcWlWSHJHdHBKaWVlTjRLTG96Rkh4a0RBYzY1eE5MN3dDcjNrTFlGeGx2SkFjMmx5Nkx6VnlWRkR4WV9jN0lHLWJuSFBPV19qVF9nR0JMWnZFWXFOV3ZWMl9kM3A3SjFsZWktdkdLQWxocGF5dFRkOExvcnhtNEt0WEF3SDZEUkttc0t0Z2hUai05OUdMYjFERTdBV0tr?oc=5">What Is Going on With Amazon Stock on Monday? - Benzinga</a></td>
+                <td data-label="Source" class="small">Benzinga</td>
+                <td data-label="Published" class="small">Mon, 28 Sep 2026 17:30:53 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxNbG9QN3lOMm13amhKTmp6djZUMVVTallpWWJoRTJ0a003Tkd4OEozY19Mdzc4WVpZZTNHM1VmUzR6WkZXakhucEtPb0QxTWgyenFEb0VnZEJjSFZ5MnZhQkREUG40M0lVMFRwd3gzckxtbnRMRDB3ZzUtUi1xY19YcHl0WXB1UmQ0NkxSZUV0cnhZUTJpOWEzVg?oc=5">These 3 AI Stocks Are Poised to Be Big Winners from Amazon&#39;s Choice to Block Meta&#39;s Muse - The Motley Fool</a></td>
+                <td data-label="Source" class="small">The Motley Fool</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 08:30:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMingFBVV95cUxNakl3OXpfMThiblFuc1N4RWJxMlhtT3hXdjJyNy1CX09iTXpWckFuX1Nld2FXQ0I4Mm1FME5zVWlpb0tadVRkRWVfZUxiSmE1S2pPY0NFX3RTQWtZcVJOT0R0bWVERmFIUGdXV3d1Z0txdnZ0RnNsWFB1UFdIN2NNZlpBeUdVWXVEX1lSTmFnYl82Q1lXOHVpeGkzY01KZw?oc=5">Nancy Pelosi And Bill Ackman Are Betting On The Same Two Stocks - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Tue, 29 Sep 2026 13:27:17 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilwFBVV95cUxNZ011bDZWRVNhajFPY3lXNjBiMGpKWlk1VGVUMGhBM09EZzAwX0hxV0x1Y2JlT1ROc3QwS0lLaGlVdDg1dGM4aDctbW9LeFBxRndaM3BLVTFVanRqTkw3ZXJ3Ums1QXVsd1hNYXJFaWs0ZEpiMkV4MFpLOXo5S2FtaG9pVjk3cEMyT2d4SzVaRjJFYU1YSkUw?oc=5">Why Amazon (AMZN) Dipped More Than Broader Market Today - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Mon, 28 Sep 2026 20:45:02 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilgFBVV95cUxOQUNlUWpIMDA2ZnNteVMtOG1sMWxvTHFtYktKSHptZnN2N0dOTklNNGt3aXdIZ2lNZUJSUUtqZ1B0Vm8wTTZfLWJQYnc4Qy1nNl8xTk53eDBRSVYwOEF0M0dDcjhWOTk3Y1liM0JfWjFad25RNkc3QTdSVWdrb0Z3ckRicTFtbGpWZkEwYkVZVDI3YU4tRnc?oc=5">Is Amazon Stock a Buy, Hold, or Sell Below $250? - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Sun, 27 Sep 2026 18:15:26 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxPMjNDSV95T2dJNElfa2pkRERIU21fdnVIR1RQcnlHS2s1NWtFeldfTzdHeFhYNzJsSFM2aVJCRl9jZlpwSjRIUHpjRWlhek9YSkVhdzNPVjNLUUVoNzZwVzBieG1jMXNSTHJGSXROUjMyajR5aG1scDRUemotUDUxVjhwS096OXlCeFRlNmZaczdRYlE4TTYtblRRRzNUUXdJUzZpaGJfeTZaR2dBWjh2czBJWGNEOFZz?oc=5">Amazon.com, Inc. $AMZN Stock Sold by Natural Investments LLC - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:16:16 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMioAFBVV95cUxNZG96RFcyMUVMZFN3TUUtbUZXaUtadmVveWhLT3ZObk1VaFN1MS1jOURldmFZUGR1MUlwend4UXhLdTh2Y3hvR0xLQWFNZWNXaFd5MXRMY09xWnJxVHlmaVM5bkxxMFB0OFM0Q3lud0lMenlvZGtxY0JEcWNMd1JQd3hGd0lFeS1jbTRVWHlremhsaXFiOXVsajFGWEcxa29q?oc=5">3 Mega-Cap Stocks to Target This Week - StockStory</a></td>
+                <td data-label="Source" class="small">StockStory</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 09:05:14 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMipwFBVV95cUxNWmcwX0tnSWpqSmc4dldxRy00X0FtNno5cmNHT2RLVnZEVkJuaU92bTdIR2xJQXRza2R2Mlg0dUZKSlRiZUpCVWdXX0ZJbTRiWExkZTRnZk9ib3dFS1RLSjJRXzFFSmhwenRCTUg1UGF3MzI0UmtLM2d1bENHRzZsWE1pS250T0lzbDhXcnRub08yYzBwOW9ITVJnano4aVRRU2ZWSzlKYw?oc=5">How much AMZN stock does Amazon founder Jeff Bezos actually own? - thestreet.com</a></td>
+                <td data-label="Source" class="small">thestreet.com</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 20:00:12 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOUGZDc1V0RDFtcWthaG4xTVVrVWRPbXY3VG11enpDUmh3Q2d5NlpILXRsTGFOR3ZPQVpza29Pc3ZzTS0zRF9oSGRfLXJGTjUzaWFHZmh0aGIwOHFLdmh0eGZOWGJ5dXgtc1Ftb0ZxT3g2NFFLYzBjNEN0MVJ6SXNsdmQ1TTNoS3F3b1dzMC1DYXRZbHpMc3RmMQ?oc=5">Amazon Stock Pays $0 in Dividends. Here&#39;s Why Long-Term Investors Should Own It Anyway. - The Motley Fool</a></td>
+                <td data-label="Source" class="small">The Motley Fool</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 06:51:24 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMixAFBVV95cUxOclJHanp6RXBLM2k2R0xTelJxdWdEOTM1NTI5aS1iOThrTXhpc2VUQXNqOU1vUUFyQ3NXMlBpeklzRmp1U0ZHWGpOSS1JR3EtcU9mOUVHWUcwZ1hZR2VPY3BZVkpIQ3Q3QnhheE9UYzZRc0tIVWVZZ19tVU0yM0RQaWx3eGJuVWhUUTB1SGtPbzBNWS14cHVobkh3bnFQN2VfRDBrX205M1NGSnBla2ZITk42UXlZQkVNVGdrOS1XZ2tzZmxy0gHKAUFVX3lxTE1ubU13akRIaDQ2eWlVQ3VKNzBvNWxwQURvNlQ2Zi1Fc1VjVUVCYWphTUw1RldUQWNjbThFWmdiTkN2VEZTdnhtQ0c5WEpyaENYeFVCVFQ1YUd2dTdRSllSaGw0dnBJUnpPSzJkdGlIeVZrQ3BGUDRCVWp2WTVYQ1VaemlsMGdwS2NKc0dWUVM4MnZUclpKd2JPbDVqTHg5WlRXZ3lCYVZHbEllQnFBSDd0OG5PdURNeDFpZ3NqNWc4WjhZMFJ4X0FSZ1E?oc=5">Amazon (AMZN) Stock Could Be 43% Undervalued After AI Tax Break Scrutiny - Simply Wall Street</a></td>
+                <td data-label="Source" class="small">Simply Wall Street</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 08:44:51 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMi3gFBVV95cUxOT3AxUWhBdEJ4WTAyNWpDSDFTVzdJMzNOS3EzMEstSlgxMHlyNzI2bzNMbVFxYkZhZ1NfMWR2ZURRMER6dDBMX3B4ZGhtMThpTGZ3T0M2TWIzQ0h4VjRTNnI3UmZKNE1INmV1Vzhkd0s2cWVqWFhyVlNVems4aGVaMjc1c1NSakk1M2VjTDNMQzV6eE9KaHFZVzN2YmEyNU1ydXlheFA2TjM2aVVkT0laWmtRa2VqUGo0NTk1S1VDZkJpR3oyMGp3OEE4cTZIWU14SjJGYS1COGJIN3hvM0E?oc=5">CEG Stock Rises Overnight: Constellation Signs 20-Year Nuclear Power Deal With Amazon - TradingView</a></td>
+                <td data-label="Source" class="small">TradingView</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 01:16:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxQR0NzUGZhY05seEZXRWdESXNCTktRMThkTXQtYXhxZkZTanRQT2ZKVjY0VHlJcUtrWFJLYWktVFVJS3VyNDZ0QzVkR3Y3X2JsMEdkZVY5YkhvXzQ4R2ZnUWU3eVRST0xndUdvQVpXczJoOWxhU056WllLM2lzMjlWQ29DSUloMnNxM0NDRGViS2p0T0VGNWVFZ0FxTFZSOEdWOG1mNVg2WUdiLXRxcEZuM2x1ZHRUdzVISEow?oc=5">Could Amazon Stock Survive AI Spending Outrunning Its Cash? - Trefis</a></td>
+                <td data-label="Source" class="small">Trefis</td>
+                <td data-label="Published" class="small">Wed, 30 Sep 2026 14:24:36 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxPRWtMZTZ3VWJ0ZEdoSkgwY29Hc0F4NzdQbXdyWE5LZWE4cDktYWtyUHp6QjBSc3Q5cHpiVDFQamZ3MnpZc1pXdmVPY251MkN2TGR1MUszUUNmODRQakZzZUs3UmYxQm5CbEZ3VFJfWXo4c2M4eDhpYlBqVE1iUkUySU5HMVNRRHBvejdhV0ZOZGtiVkxXNy0tS3Jn?oc=5">By 2001, His Amazon Shares Had Fallen 93% And Wall Street Was Predicting The Company Would Go Bankrupt. Bill Miller Didn’t Care, He Doubled Down At $6 A Share. Two Decades Later He Had More Amazon Stock Than Anyone Not Named Bezos - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 10:38:38 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxQM0RNYmd3T29TNmotRk1JSmhKNUpuNmMxMDI3dV9PSXRfb0JhelpVaGlrWE11N2JqMFByM3BzUmk4SGRkUmNhS2hyYlA1cXFsM0NzcEJxN3p2OEZ3a1hqSEdJYnBxUmlodkxXbUtBVjdnZTl5b2JYNUM2eFVoSGZKeWxaNEFyOXJibU50UkJhci1CQmVHMDZCc2MyWG0wWjZkRW1rSWZ5cl93d2h2eEM5V1JVWW1aTG81LWRmWF9DNXE?oc=5">Amazon.com, Inc. $AMZN Stock Sold by Ironvine Capital Partners LLC - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:08:15 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPOHhNdzVocjhvLVQtQnZfam1PRjRZNGltdGt4R2I3bkI5V2I2M0RQUTUzUWFyMHZZX2hHcXU5Vkk5RlVNTzdwYkttQ2liRXZ1dnNXMEtqb2g5dG8xZ29CMV9OQktqampXY01DV00zWmhTZ0d0dzQwMC1wRXRDUXZDT2Q2ZjJSR0hZckZNSmZOd1o5ODF6Q0tOR0tfRQ?oc=5">Amazon Raised Its 2026 Capex Guide to $220 Billion. Here’s What Drove the Increase - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 11:40:17 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxNRjVMV3VKWFFoUUZEQ1ZXZ0t5VUxfWUlkdDdpZEpNMDJ2ZFVGM0t6XzVreVlxcHF3R05yNFZKUmY2Q19DQUJyMzdPTjFtNFpJOUpOX25ORDBkUTIySU5vczRoQ2dHX09CVEZuZzFnZGNOT0tGSHhxQXlJR2diTjJiRUdoWFdHLUVSc1huYndUOFZhVVF6ZU1zYWhSd2phNG5tX1ZFb3pucFlkeFpjTC1IVDlIS1VjQ09odlFCME11MVc?oc=5">Amazon.com, Inc. $AMZN Stock Bought by Secure Asset Management LLC - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:34:21 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMixAFBVV95cUxPSk50TkRLQU43cFZqYTdra3hnRzVKRDZSMWVjeTFTNnpPOEdZY3ZiRFhCZTJINGJzYXptZFdpdngzcEVSVS1JNTU3amh0N2dEeWZndzctUmZ1c0hzNjFMWEE3cGtPX2oxeENDUnAtMXd6UExoMzJaaWR4VGUxbm9xWFBsbEwzUVE5eUh0c2JoVkNoaEluX0RTTEh2VWdNVWxMWVFiQXdUdUZYcWlSUlRGQzFDSVhYdHViUVdiZGFEaDU2bDBl?oc=5">Amazon.com, Inc. $AMZN Stock Bought by Lone Peak Global Investors LLC - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:16:15 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMivgFBVV95cUxONnlsaGZWQlcwTzBZc2dwblIwZ0JyUFd1bk15TnhILXdmYzMySmhPS0h6MnllNXU2ZmRUOS1fRTdsT3N3WWdRVlQ5ZkdTejVIOVBVUGluMXItV3lod3EycTkxZ1hYSDhGYkNPRG5RZVB6a3JmazBwM1ZpM1dqcFZTdXJCdkFQV1FRXy1qWE1BaXVPOTkxMmFkX2tHUjVVVE56ZzV4Rkl0T1pDWjIxVlEzNHo5VUJWeXEzQS1kMy1B?oc=5">3,167 Amazon.com, Inc. $AMZN Shares Sold by Resolute Advisors LLC - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:38:26 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMitgFBVV95cUxQYXBWRlRlR2ZnWDBPMXhxODkyN3d3M3lhbUJiLWk0eGx4OG1ka1VjYUJxV1RGSkZCS196aGVuZjdjMWVLWGMtd0dNTHRkckRCREMzMGFsa3hjX2N4RVU0NHhEdG0zbnZLdi02VWdCbm15YVBWZV9BZ25mdTFoU2tkQV8yaXpkek1VbmtQRkRnZ28tY3dmYmJfRTVCVVBFLUtpZ05vSW9rMk9vem9jMnBIQk9HVDRTQQ?oc=5">4,695 Amazon.com, Inc. $AMZN Shares Acquired by Ballast Inc. - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:38:26 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMixAFBVV95cUxQNTYtc3BLX3NDWGhBaGZjVy1wbFgyREllS2o1MjBUZXFSR1lnV1Z4OWVNbE9vUGxPZzB5andWRXJZVk94bUc3OWxjNlJ0dnF6ank3WVFxU2xCeGdHY29zZnV3QThsS3J1R3lnUFd1bVdUQ2UxWVhtLW1ySWdqTkxudmNYWDdxRFdWVURFdDZBcVlLZVRkNHJBVXFCRndENmUzZkNwd0VTMjNZRkwwd0JkdWRrN3dLQkhjdEtsSElvUXZZbE5P?oc=5">Amazon.com, Inc. $AMZN Shares Sold by Retirement Income Solutions Inc. - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:38:27 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxNQlVWdFZhOTFNbWJMbHZ2TmRDcnE3c0ZBdV9fdzZ3RTJ1NWQxei1mOWR3MU5TTU5aT184WGtFckVxNDVrR2JqV0RwdlZEZ09vU3RvclloZktPWnE4VEQ1RnR3VVpBbGNyUDdESnYtX2xQTHA2OG12em1Xdk4zbjJKQmZWQUcyX1B0Q0gtdUtnMERoblN5dE90dmxleFg4UHVOemZxWVpDN2xXcmd3WHpRcFpLMEl6V3M5?oc=5">4,546 Amazon.com, Inc. $AMZN Shares Sold by SkyOak Wealth LLC - MarketBeat</a></td>
+                <td data-label="Source" class="small">MarketBeat</td>
+                <td data-label="Published" class="small">Thu, 01 Oct 2026 07:34:21 GMT</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="small">Total 25 items · avg tone: positive</div>
+    </section>
+
+    <section id="social" class="sect">
+      <h3>💬 Social Buzz</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead><tr><th>Mentions</th><th>Engagement</th><th>Avg Sentiment</th></tr></thead>
+          <tbody>
+            <tr>
+              <td data-label="Mentions">0</td>
+              <td data-label="Engagement" class="small">0</td>
+              <td data-label="Avg Sentiment" class="small">neutral</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- congress -->
+    <section id="congress" class="sect">
+      <h3>🏛 Congressional Trading</h3>
+      <div class="small">Last activity: — · Buys 0 / Sells 0</div>
+      <div class="table-scroll" style="margin-top:8px">
+        <table class="tbl rtable">
+          <thead><tr><th>Member</th><th>Chamber/Party</th><th>Type</th><th>Traded</th><th>Filed</th><th>Amount</th></tr></thead>
+          <tbody>
+            
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- agents & scenarios -->
+    <section id="agents" class="sect">
+      <h3>🤝 Final Verdict &amp; Agent Playbooks</h3>
+
+      <div class="card host">
+        <b>Host Decision:</b>
+        <span class="pill">HOLD</span>
+        <span class="chip">conf 0.78</span>
+        <span class="muted">Amazon shows mixed signals: positive financial outlook but conflicting technical and bearish Ichimoku indicators. Options imply resistance, suggesting holding.</span>
+      </div>
+
+      <div class="grid-3" style="margin-top:12px">
+        
+      </div>
+    </section>
+
+    <!-- sources -->
+    <!-- <section id="sources" class="sect">
+      <h3>📚 Data Sources</h3>
+      <div class="table-scroll">
+        <table class="tbl">
+          
+            <tr><td>price</td><td class="small">Alpha Vantage API</td></tr>
+          
+            <tr><td>quant</td><td class="small">Calculated from OHLCV data</td></tr>
+          
+            <tr><td>options</td><td class="small">Finnhub Option Chain API</td></tr>
+          
+            <tr><td>short</td><td class="small">Fintel + FINRA data</td></tr>
+          
+            <tr><td>congress</td><td class="small">House/Senate trading disclosures</td></tr>
+          
+            <tr><td>news</td><td class="small">Google News RSS</td></tr>
+          
+            <tr><td>social</td><td class="small">StockTwits/Reddit APIs</td></tr>
+          
+            <tr><td>forecast</td><td class="small">IV &amp; ATR model (compute_anticipated_price)</td></tr>
+          
+            <tr><td>chart</td><td class="small">Plotly via render_price_chart</td></tr>
+          
+            <tr><td>template</td><td class="small">report_v4_pro.html</td></tr>
+          
+        </table>
+      </div>
+      <div class="small">This material is not investment advice.</div>
+    </section>
+  </div> -->
+
+  <script>
+    // theme toggle (persisted)
+    (function(){
+      const btn = document.getElementById('themeBtn');
+      const get = () => localStorage.getItem('theme') || 'light';  // 기본 light
+      const set = t => { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); };
+      set(get());
+      btn && (btn.onclick = () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    })();
+
+    // 모바일에서 "해설 & 토론" 섹션을 KPI 위로 이동 (내용은 그대로, 위치만 변경)
+    (function(){
+      const debate = document.getElementById('explain-debate');
+      const kpi = document.getElementById('kpi');
+      if (!debate || !kpi) return;
+      const originalParent = debate.parentNode;
+      const nextSibling = debate.nextElementSibling;
+
+      function placeMobile(){
+        const isMobile = window.matchMedia('(max-width: 860px)').matches;
+        if (isMobile){
+          if (debate.previousElementSibling !== kpi.previousElementSibling) {
+            kpi.parentNode.insertBefore(debate, kpi);   // KPI 앞에 배치
+          }
+        } else {
+          // 데스크탑에서는 원래 위치로 복귀
+          if (nextSibling) originalParent.insertBefore(debate, nextSibling);
+          else originalParent.appendChild(debate);
+        }
+      }
+      window.addEventListener('resize', placeMobile);
+      document.addEventListener('DOMContentLoaded', placeMobile);
+      placeMobile();
+    })();
+  </script>
+  <script>
+  /* ====== Scrape Guard (우클릭/복사/드래그 차단) ======
+    - PROTECT: 전체 보호 ON/OFF
+    - BLOCK_KEYS: Ctrl/Cmd + C / X / S / P / U / A 차단
+    - 차트/링크/버튼/폼 요소는 예외 처리
+  */
+  (function(){
+    const PROTECT   = false;   // 보호 켜기/끄기
+    const BLOCK_KEYS= false;   // 단축키 차단(복사/인쇄 등)
+    const SCOPE     = document.getElementById('content-root'); // 리포트 래퍼
+
+    if (!SCOPE) return;
+    if (PROTECT) SCOPE.classList.add('protect');
+
+    const isEditable = (el) => {
+      const tag = (el && el.tagName || '').toLowerCase();
+      return /(input|textarea|select)/.test(tag) || (el && el.isContentEditable);
+    };
+
+    // 우클릭 메뉴 차단
+    document.addEventListener('contextmenu', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 텍스트 블록 선택 차단
+    document.addEventListener('selectstart', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 드래그 차단 (이미지/텍스트 드래그)
+    document.addEventListener('dragstart', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 흔한 단축키 차단 (옵션)
+    if (BLOCK_KEYS){
+      document.addEventListener('keydown', (e)=>{
+        if (!PROTECT) return;
+        const k = (e.key||'').toLowerCase();
+        // Ctrl/Cmd + C/X/S/P/U/A (복사/잘라내기/저장/인쇄/소스보기/전체선택)
+        if ((e.ctrlKey || e.metaKey) && ['c','x','s','p','u','a'].includes(k)){
+          // 입력필드에서만 허용
+          if (!isEditable(e.target)) e.preventDefault();
+        }
+      }, {capture:true});
+    }
+  })();
+  </script>
+</body>
+</html>
