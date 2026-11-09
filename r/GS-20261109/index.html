@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>GS Stock Report — GS</title>
+  <link rel="canonical" href="https://cheesefonduechamchi.github.io/chc-reports/r/GS-20261109/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Multi-agent Stock Research" />
+  <meta property="og:url" content="https://cheesefonduechamchi.github.io/chc-reports/r/GS-20261109/" />
+  <meta property="og:title" content="GS — BUY · multi-agent stock report" />
+  <meta property="og:description" content="Goldman Sachs (GS) shows a strong overall outlook supported by financial metrics, positive sentiment, and option indicators, despite mixed technical signals." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GS — BUY · multi-agent stock report" />
+  <meta name="twitter:description" content="Goldman Sachs (GS) shows a strong overall outlook supported by financial metrics, positive sentiment, and option indicators, despite mixed technical signals." />
+  <meta property="og:image" content="https://cheesefonduechamchi.github.io/chc-reports/r/GS-20261109/card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="GS — BUY · multi-agent stock report" />
+  <meta name="twitter:image" content="https://cheesefonduechamchi.github.io/chc-reports/r/GS-20261109/card.png" />
+  <style>
+    /* Light (기본) */
+    :root{
+      --bg:#f7f9fc; --fg:#0b1220; --muted:#5b6677; --panel:#ffffff; --line:#e5e7eb;
+      --accent:#2563eb; --ok:#16a34a; --warn:#f59e0b; --risk:#dc2626; --chip:#eef2ff;
+    }
+    /* Dark (토글 시) */
+    [data-theme="dark"]{
+      --bg:#0b0f14; --fg:#e6edf3; --muted:#9aa4b2; --panel:#0f172a; --line:#1f2937;
+      --accent:#60a5fa; --ok:#22c55e; --warn:#f59e0b; --risk:#ef4444; --chip:#0b1220;
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+    [data-theme="dark"] .topbar{background:rgba(11,15,20,.8)}
+    .topbar .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 20px}
+
+    .badge{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700}
+    .spacer{flex:1}
+    .btn{border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+
+    .hdr{display:flex;align-items:flex-end;gap:16px;margin:18px 0 6px}
+    .hdr h1{margin:0;font-size:clamp(18px,4vw,24px)}
+    .muted{color:var(--muted);font-size:12px}
+
+    .nav{display:flex;gap:10px;flex-wrap:nowrap;margin:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap}
+
+    .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+    .kpi .lbl{font-size:12px;color:var(--muted)}
+    .kpi .val{font-weight:800;font-size:clamp(18px,5vw,20px);line-height:1.2;margin:6px 0}
+    .kpi .sub{font-size:12px;color:var(--muted)}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+
+    .sect{margin:24px 0}
+    .sect h3{margin:0 0 10px}
+
+    .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:12px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+    .tbl{width:100%;border-collapse:collapse;min-width:720px}
+    .tbl th,.tbl td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+    .tbl th{background:#f3f6fb;color:var(--fg)}
+
+    .chip{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-size:12px}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:12px}
+
+    .small{font-size:12px;color:var(--muted)}
+    /* touch-action: 세로 스크롤은 허용하되 차트 위에서의 핀치 줌만 막는다.
+       (차트는 PNG 라 확대해도 해상도가 늘지 않고, 스크롤 중 오작동만 유발했다) */
+    .chart{border:1px solid var(--line);border-radius:12px;overflow:hidden;
+           touch-action:pan-x pan-y}
+
+    details{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel)}
+    details summary{cursor:pointer;font-weight:600}
+
+    .stat{display:flex;align-items:center;gap:8px}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .risk{color:var(--risk)}
+    .host{display:flex;gap:8px;align-items:center}
+
+    :target{scroll-margin-top:80px;box-shadow:0 0 0 2px var(--accent) inset;border-radius:10px}
+
+    @media (max-width:980px){
+      .grid-kpi{grid-template-columns:1fr}
+      .cards,.grid-3{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+      .tbl{min-width:560px}
+    }
+    /* .protect{
+      /* -webkit-user-drag: none; */
+      /* -webkit-touch-callout: none;  iOS long-press 메뉴 차단 */
+      /* user-select: none;            텍스트 블록 선택 차단 */
+    /* } 
+    /* 코드 블록(원문 JSON) */
+    .code-block{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 420px;         /* 너무 길면 스크롤 */
+      overflow: auto;
+    }
+    /* 필요하면 선택 허용(복사방지 사용 중에도) → 주석 해제 시 적용
+    .protect .code-block{ user-select:text; }
+    */
+
+    /* 이미지 우클릭/드래그 차단 (차트는 예외처리 아래) */
+    /* .protect img{
+      pointer-events: none;
+    } */
+
+    .protect .chart img{
+      pointer-events: auto;   /* 차트 이미지는 터치 허용 */
+    }
+    /* 상호작용/접근성 예외: 링크/버튼/폼/차트는 정상 동작 */
+    .protect a,
+    .protect button,
+    .protect input,
+    .protect select,
+    .protect textarea,
+    .protect .chart,
+    .protect .plotly-graph-div,
+    .protect .plot-container{
+      user-select: auto;
+      pointer-events: auto;
+    }
+    /* 라이트 테마용 타일 */
+    body.watermark{
+      --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%230B1220' fill-opacity='0.06'>치퐁참</text></g></svg>");
+      background-image: var(--wm-img);
+      background-repeat: repeat;
+      background-position: 0 0;
+      background-attachment: fixed;   /* 스크롤해도 고정 */
+    }
+
+    /* 다크 테마일 때는 밝은 색으로 */
+    [data-theme="dark"].watermark{
+      --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%23E6EDF3' fill-opacity='0.08'>치퐁참</text></g></svg>");
+      background-image: var(--wm-img);
+    }
+
+    /* 인쇄 시 너무 진하면 살짝 더 옅게 */
+    @media print{
+      body.watermark{
+        --wm-img: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><g transform='translate(130,130)%20rotate(-30)'><text x='-60' y='10' font-size='36' font-family='Inter,Arial' fill='%230B1220' fill-opacity='0.04'>치퐁참</text></g></svg>");
+        background-image: var(--wm-img);
+      }
+    }
+    .chart img{
+              width:100%;
+              height:auto;
+              display:block;
+              touch-action:pan-x pan-y;   /* 핀치 줌 차단 (스크롤은 유지) */
+              -webkit-user-select:none; user-select:none;
+              -webkit-touch-callout:none; /* iOS 롱프레스 확대 메뉴 방지 */
+            }
+    /* 인터랙티브 Plotly: 폭은 컨테이너에 맞추고 높이만 지정.
+       모바일은 폭이 좁아 2단(가격+거래량) 서브플롯이 눌리므로 더 높게 준다. */
+    .chart .plotly-graph-div{ width:100% !important; height:480px !important; }
+    @media (max-width:640px){
+      .chart .plotly-graph-div{ height:560px !important; }
+    }
+
+
+    /* ===== Responsive tables: desktop=table, mobile=cards ===== */
+    .tbl.rtable { min-width: 0; }            /* 기본: 좌우 스크롤 제거 */
+    .table-scroll { overflow-x: auto; }      /* 데스크톱 보조 */
+
+    /* 모바일에서 표를 카드로 변환 */
+    @media (max-width: 860px){
+      .tbl.rtable thead { display:none; }
+      .tbl.rtable, .tbl.rtable tbody, .tbl.rtable tr, .tbl.rtable td {
+        display:block; width:100%;
+      }
+      .tbl.rtable tr{
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin: 10px 0;
+        padding: 6px 8px;
+      }
+      .tbl.rtable td{
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 6px;
+      }
+      .tbl.rtable td:last-child{
+        border-bottom: 0;
+      }
+      .tbl.rtable td::before{
+        content: attr(data-label);
+        display:block;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body class="watermark">
+  <!-- Sticky topbar -->
+  <div class="topbar">
+    <div class="inner">
+      <span class="badge">GS</span>
+      <strong>GS Stock Report</strong>
+      <span class="muted">Automated report · data as of 2026-11-09 close (ET)</span>
+      <div class="spacer"></div>
+      <button class="btn" id="themeBtn">Theme</button>
+      <a class="btn" href="#sources">Data Sources</a>
+    </div>
+  </div>
+
+  <div class="wrap" id="content-root">
+    <div class="hdr">
+      <h1>GS</h1>
+      <div class="muted">Close $906.22 (2026-11-09 ET) · Mkt Cap 261,385,191,424</div>
+    </div>
+
+    <!-- quick nav -->
+    <nav class="nav">
+      <a href="#explain-debate">Commentary & Debate</a><!-- shown on top on mobile -->
+      <a href="#kpi">KPI</a>
+      <a href="#chart">Chart</a>
+      <a href="#forecast">Forecast</a>
+      <a href="#options">Options</a>
+      <a href="#short">Short/Borrow</a>
+      <a href="#news">News</a>
+      <a href="#social">Social</a>
+      <a href="#congress">Congress</a>
+      <a href="#agents">Agents & Scenarios</a>
+      <a href="#sources">Data Sources</a>
+    </nav>
+
+
+    <!-- KPI row -->
+    <section id="kpi" class="grid-kpi">
+      <div class="kpi">
+        <div class="lbl">Close · 2026-11-09 (ET)</div>
+        <div class="val">$906.22</div>
+        <div class="sub">vs prev close —</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">5-Day Range (anchored on session open)</div>
+        <div class="val">$829.58–$937.72</div>
+        <div class="sub">IV-skew+ATR · ±6.1%</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Options (IV/PCR)</div>
+        <div class="val">33.3% (rank 83) / 0.60</div>
+        <div class="sub">CallWall $1,060.00 · PutWall $540.00</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Short/Borrow</div>
+        <div class="val">SI 2.4% · DTC 3.29</div>
+        <div class="sub">SVR — · Borrow —</div>
+      </div>
+    </section>
+
+    <!-- Commentary & Debate (placed on top on mobile) -->
+    <section id="explain-debate" class="sect">
+      <h3>🧠 Commentary & Debate</h3>
+
+      
+        <div class="card">
+          <b>Ichimoku Analysis</b>
+          <div class="small">The stock price is floating within the cloud, meaning it&#39;s in a neutral zone. Although currently strong, there might be bearish twists looming ahead judging by the future cloud. Keep an eye on the base line as it&#39;s both a support and a potential risk loss level.</div>
+        </div>
+      
+
+      
+        <div class="card">
+          <b>🤺 Debate (key issues)</b>
+          <ul class="small" style="margin-top:6px">
+            
+              <li>All agents recognize heightened volatility for Goldman Sachs (GS), indicating increased price movements are expected.</li>
+            
+              <li>Goldman Sachs&#39; current market position is generally viewed as positive by most agents, with bullish sentiment and profitability being highlighted.</li>
+            
+              <li>While Goldman Sachs exhibits positive financial metrics, there are mixed indicators regarding the immediate trend direction; some data point to short-term bullishness, while others suggest possible neutrality or bearish shifts.</li>
+            
+              <li>The future outlook presents different scenarios: bullish options sentiment versus potential bearish indicators from technical models.</li>
+            
+              <li>T&#39;s bullish signals and positive direction conflict with I&#39;s neutral bias and potential bearish future cloud outlook.</li>
+            
+              <li>O&#39;s bullish bias contrasts with I&#39;s indication of potential bearish shifts ahead.</li>
+            
+              <li>F&#39;s conclusion of stable investment contrasts with T&#39;s suggestion of a more dynamic, bullish movement due to options indicators.</li>
+            
+              <li>S&#39;s positive sentiment from news and congressional activity seems at odds with I&#39;s neutral technical indicators.</li>
+            
+              <li>Monitor GS&#39;s price action relative to critical levels like the &#39;future cloud&#39; in technical analysis and &#39;call/put walls&#39; in options.</li>
+            
+              <li>Assess implications of elevated implied volatility on trade strategies, especially given T and O highlight this condition.</li>
+            
+              <li>Further investigate contrasting directional signals between technical metrics (I and T) and option sentiment (O).</li>
+            
+          </ul>
+        </div>
+      
+    </section>
+    <!-- chart -->
+    <section id="chart" class="sect">
+      <h3>📈 Price & Indicators</h3>
+      <div class="chart">
+        
+        
+          <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>                <div id="9246b17a-472a-4522-a481-58ef7db540be" class="plotly-graph-div" style="height:480px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("9246b17a-472a-4522-a481-58ef7db540be")) {                    Plotly.newPlot(                        "9246b17a-472a-4522-a481-58ef7db540be",                        [{"close":{"dtype":"f8","bdata":"AAAAQOGGjUAAAABAM4+NQAAAACBc241AAAAAIK5HjkAAAACAwqONQAAAAEDhko1AAAAAgOsFjUAAAADA9bCOQAAAACBc4Y5AAAAAANclj0AAAAAAKRSPQAAAAIDCI49AAAAAwPWCj0AAAACAPQaQQAAAAOBRYpBAAAAA4FGikEAAAACAFESQQAAAAKBwEpFAAAAAYLg6kEAAAAAAAFSQQAAAAEAKIJBAAAAA4FFKj0AAAABgjy6QQAAAAAAAm5BAAAAAIK7QkEAAAAAgrgqRQAAAAGCPLJFAAAAAgD0ikUAAAADgekmRQAAAAIDCGZFAAAAA4KPTkEAAAAAgXKSQQAAAAEDh3I9AAAAAIK7hj0AAAADA9ZqPQAAAAEDh3I9AAAAAAADoj0AAAAAAKX2QQAAAAIDrS5BAAAAAYI8WkEAAAABA4X+QQAAAAGC4fJBAAAAA4KNXkEAAAAAAANCRQAAAAKBHAJJAAAAAANcdkUAAAABA4aSQQAAAAMAefJBAAAAAgD32kEAAAADAzCiRQAAAAEDhypBAAAAAgOuUkEAAAACA62CQQAAAACBcJZBAAAAAAACmjkAAAACgcAOQQAAAAEAK049AAAAAgD0MkEAAAACA63OQQAAAACCFkZBAAAAA4FEikEAAAACgcD6QQAAAAEAKKpBAAAAA4KMpkEAAAAAA1zSQQAAAACCFSpBAAAAAIK49kEAAAACAPW2QQAAAAEDhQZBAAAAAQDPtj0AAAACgmU+PQAAAAMAePZBAAAAAwB4xkEAAAAAghYuQQAAAAADXQZBAAAAA4HpDkEAAAADA9SeQQAAAAKCZB5BAAAAA4HpUj0AAAAAgXGOPQAAAAGC4N5BAAAAAoHA6kEAAAADAHjKQQAAAAMAeE5BAAAAAACnej0AAAABguBSQQAAAAKCZ445AAAAAIFyFjkAAAAAA10+NQAAAAIDCu41AAAAAAABwjUAAAADAHvuNQAAAAIDrq41AAAAAQOFCjUAAAADgUdqMQAAAAKCZO41AAAAAgD2ijEAAAACA66GMQAAAAEDhIoxAAAAAIFwFjEAAAADgejSMQAAAACCu64tAAAAAoHAJjEAAAAAgrrmLQAAAAGC4lItAAAAAYI\u002f6i0AAAACgme+LQAAAAKBH34tAAAAAgMJ1i0AAAACAPdqLQAAAAIAUiotAAAAAgD1ei0AAAADgeqaLQAAAAIDCRYxAAAAAYGbai0AAAACgcF2LQAAAAIA96otAAAAAACl+jEAAAAAgXOmMQAAAAADX\u002fYxAAAAAYGb0i0AAAACAwhWMQAAAAGC4AIxAAAAAAAAAjUAAAACgmSeLQAAAAGCPDotAAAAAgMJRjEA="},"high":{"dtype":"f8","bdata":"AAAAgD2ujUAAAAAAAKSNQAAAAGBm\u002fI1AAAAAoEd9jkAAAAAAAPyNQAAAACCFDY5AAAAAwB5djUAAAAAA17WOQAAAAAAAPI9AAAAAQOFqj0AAAADgUcSPQAAAAEAzXY9AAAAAgMKPj0AAAABA4QyQQAAAAMDMbJBAAAAAQOHHkEAAAABA4X+QQAAAAKCZH5FAAAAAoHApkUAAAABguJyQQAAAAGBmoZBAAAAAgD0xkEAAAAAgrjOQQAAAAMD1xpBAAAAAYLgYkUAAAAAAACWRQAAAAMDMh5FAAAAAAACUkUAAAACA62+RQAAAAEAzPpFAAAAAYGYIkUAAAAAAAEWRQAAAAAAAhJBAAAAAYLgvkEAAAACgRwmQQAAAAMAeJpBAAAAAwB49kEAAAAAAKX2QQAAAAKBwd5BAAAAAYLhAkEAAAABACqCQQAAAACCurJBAAAAAoEeHkEAAAAAgXN+RQAAAAMD1B5JAAAAAwMwBkkAAAABguPeQQAAAAKCZ\u002f5BAAAAAgOsBkUAAAADgo0qRQAAAAIDr8pBAAAAAIIXVkEAAAAAAAAKRQAAAAADXXpBAAAAA4HoQkEAAAAAAKReQQAAAAIDrS5BAAAAAANcPkEAAAADgo6iQQAAAAADX1JBAAAAAACmwkEAAAAAAAFyQQAAAAGC4VZBAAAAAYLhNkEAAAABAM4CQQAAAAKBHjJBAAAAAwPVOkEAAAAAghXqQQAAAAAAATpBAAAAAoEdTkEAAAAAgrgmQQAAAAOCjTpBAAAAA4HpdkEAAAACAFJ6QQAAAAIA9mpBAAAAAQDNykEAAAAAgXGOQQAAAAGBmIpBAAAAA4HockEAAAABguO6PQAAAAOBRP5BAAAAAwMxEkEAAAAAgXE+QQAAAAGC4OZBAAAAAgOsMkEAAAADA9UuQQAAAACCFrY9AAAAAgD3ijkAAAACgR8WOQAAAAIDC741AAAAAgOvHjUAAAACAwhGOQAAAAIAUPo5AAAAAANfXjUAAAACgRyuNQAAAAOCjPo1AAAAAAAAgjUAAAADA9byMQAAAAGBmoIxAAAAAQAotjEAAAAAAAIiMQAAAAIDrSYxAAAAAIIVPjEAAAADgesKLQAAAAIDru4tAAAAAIFwdjEAAAADgUTKMQAAAAAAAGI1AAAAAoHATjEAAAADgo96LQAAAAMD1boxAAAAAgMK7i0AAAADAHhGMQAAAAADXU4xAAAAAwMxSjEAAAAAAALaLQAAAAMD1JIxAAAAAoHCbjEAAAACgmQ2NQAAAAEAKW41AAAAAwB5XjEAAAACgmaeMQAAAAEAzOYxAAAAAYLgqjUAAAAAAADCNQAAAAOCjsotAAAAAoHCRjEA="},"low":{"dtype":"f8","bdata":"AAAAQAr1jEAAAABgZsaMQAAAAOCjKI1AAAAAAAAEjkAAAABA4WyNQAAAAGBmVI1AAAAA4HrejEAAAAAAAGSNQAAAAGBmUo5AAAAAQDP3jkAAAACAPdiOQAAAACBcc45AAAAAoJmzjkAAAAAAAGCPQAAAAMDMnI9AAAAAYI9fkEAAAABAChyQQAAAAAAAaJBAAAAAYGYukEAAAADgUUmQQAAAAGBmco9AAAAA4FFAj0AAAACgmUOPQAAAAIA9YJBAAAAAAADMkEAAAADAHvaQQAAAAAApGZFAAAAA4FEVkUAAAAAghQ6RQAAAAAAAtJBAAAAAQAqykEAAAABgZpiQQAAAAEAKq49AAAAAIFzBj0AAAABA4XCPQAAAAAAAWI9AAAAAANeNj0AAAAAAABSQQAAAACCFLJBAAAAAIFyfj0AAAACgcEqQQAAAAAAAYJBAAAAAIFwzkEAAAAAAAOiQQAAAAKCZdZFAAAAAQAoEkUAAAACgmVyQQAAAAOCjdpBAAAAAAACckEAAAAAAANiQQAAAAIDrmZBAAAAAoEdvkEAAAAAAABSQQAAAAMD1no9AAAAAoJmNjkAAAACAFDSPQAAAAMDMhI9AAAAAoEdpj0AAAACAFE2QQAAAAIAUkJBAAAAAwB4bkEAAAADAHiCQQAAAAKBHGJBAAAAAgMIMkEAAAADA9R6QQAAAAEDhOZBAAAAA4FEWkEAAAABgjziQQAAAAOBRCJBAAAAAAAC0j0AAAACgcE2PQAAAAMDMho9AAAAAYLgYkEAAAAAAKT2QQAAAAMAeM5BAAAAAAAAskEAAAADgUR6QQAAAAMD19I9AAAAAgMInj0AAAAAAADCPQAAAAAAApI9AAAAAIIUCkEAAAACAPRKQQAAAAEAzm49AAAAAoHCdj0AAAABguNSPQAAAAKBwl45AAAAAgOvTjUAAAADA9SKNQAAAAAAA0IxAAAAAYGZcjUAAAADA9XSNQAAAAIA9Ro1AAAAAoHAtjUAAAACgcJWMQAAAAGBmmoxAAAAAAACUjEAAAADAzD6MQAAAAEDhIoxAAAAAAACIi0AAAACAFAqMQAAAAEAKt4tAAAAAAAAAjEAAAAAAKSSLQAAAAAApZotAAAAAQOF2i0AAAACAPb6LQAAAAIAU2ItAAAAAAAAQi0AAAACAPdiKQAAAAOB6ZotAAAAA4KNCi0AAAADA9QCLQAAAAAApwotAAAAAAACIi0AAAABgjzaLQAAAAGCPiotAAAAAYLhUjEAAAABAM4mMQAAAAAAp4oxAAAAAAAB8i0AAAACAwgeMQAAAAMDM4ItAAAAAwMwcjEAAAACgmbOKQAAAAAAABotAAAAAgOt0i0A="},"name":"GS","open":{"dtype":"f8","bdata":"AAAAQDMljUAAAACgR3GNQAAAAGC4bo1AAAAAQDM3jkAAAABAM82NQAAAAIDrnY1AAAAAgMIpjUAAAAAAAIiNQAAAACCusY5AAAAAQAoVj0AAAACAPXSPQAAAAKBHH49AAAAAIFzTjkAAAAAAKYqPQAAAAOCjuo9AAAAAwPVmkEAAAADAHn2QQAAAAOB6c5BAAAAAoEcTkUAAAADAHnOQQAAAAAApl5BAAAAAYGYRkEAAAAAAAKyPQAAAAAAAdJBAAAAAgBQGkUAAAAAAAPiQQAAAAADXKZFAAAAAAACAkUAAAADAzFaRQAAAACBc1ZBAAAAAAAAIkUAAAADgeh6RQAAAAMD1epBAAAAAgMIUkEAAAADgUdqPQAAAAAAAkI9AAAAAwPU7kEAAAAAghReQQAAAAAAAcJBAAAAAAAAYkEAAAAAAAHyQQAAAAADXnJBAAAAAIFyBkEAAAAAAAPSQQAAAACCu8ZFAAAAAoJnukUAAAABgj76QQAAAAKCZypBAAAAAoEe4kEAAAACAFNqQQAAAAIAUwpBAAAAAAADMkEAAAABguOCQQAAAAGC4R5BAAAAAAAAEkEAAAABA4XqPQAAAAEDhKpBAAAAAAAAEkEAAAAAAAGiQQAAAAADXnpBAAAAAACmYkEAAAAAgXDmQQAAAAKBwPpBAAAAAYI8xkEAAAAAAAHyQQAAAAKBwQpBAAAAA4KNDkEAAAAAAKUOQQAAAAAAAQJBAAAAAoEdTkEAAAACA68ePQAAAAIDrv49AAAAAAAA8kEAAAAAAAGiQQAAAAAAAlJBAAAAAYLhGkEAAAADA9VmQQAAAAGBmIpBAAAAAgMJlj0AAAACA642PQAAAAAAArI9AAAAAIFwckEAAAABAM0KQQAAAAAAAEJBAAAAA4FHKj0AAAABAMyyQQAAAAAAAkI9AAAAAQDPFjkAAAAAgrquOQAAAAMDMYI1AAAAAIK6njUAAAAAAAOSNQAAAAMAeO45AAAAAANdljUAAAAAAABiNQAAAAAAA\u002fIxAAAAAIIUXjUAAAAAAALKMQAAAAAAAmIxAAAAAYLgAjEAAAACAFEyMQAAAAKCZK4xAAAAAYI8sjEAAAADAzIaLQAAAAGCPhItAAAAAoHC9i0AAAADAHhOMQAAAAAAA2IxAAAAAoHCHi0AAAAAAAHiLQAAAAMAe\u002f4tAAAAAQAqvi0AAAAAgrjOLQAAAAAAAIIxAAAAAIFyni0AAAABgj4CLQAAAAAAAtItAAAAAAACAjEAAAAAAAMCMQAAAACCFSY1AAAAAwMxIjEAAAABgZmaMQAAAAAAAOIxAAAAA4HrCjEAAAABgjyKNQAAAAOBRMotAAAAA4KOoi0A="},"showlegend":false,"x":["2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-15T00:00:00.000000000","2026-10-16T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-22T00:00:00.000000000","2026-10-23T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-29T00:00:00.000000000","2026-10-30T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-05T00:00:00.000000000","2026-11-06T00:00:00.000000000","2026-11-09T00:00:00.000000000"],"type":"candlestick","xaxis":"x","yaxis":"y"},{"line":{"color":"#FFA500","width":1},"mode":"lines","name":"EMA20","x":["2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-15T00:00:00.000000000","2026-10-16T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-22T00:00:00.000000000","2026-10-23T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-29T00:00:00.000000000","2026-10-30T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-05T00:00:00.000000000","2026-11-06T00:00:00.000000000","2026-11-09T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAoAhBjUA9z\u002fOc0UGNQFCvYia3SY1A8\u002fMDtRRbjUAluExFU1uNQKhpRSP0WY1AEv5KeGlLjUDsqDfFjGaNQIwG3Y2rg41A7AWLjHqkjUCll3GRfsCNQIne7FhQ241AJ72x34\u002f8jUBI9OmrnieOQE1vBDpxY45A5HDfzLKljkCqx7EOyM+OQJrxJsT4HI9AHjwj3Os5j0De1FzT51iPQE8uYAgXa49AVAVXOEBkj0CJcrxjG3iPQLnthWygno9Aj3ULGafLj0Djy+VlYv+PQPNJPTdOGpBA6EIr\u002fmcxkEBMbbmWBkqQQHaH2CbHW5BAIp8xpjFlkEA3X8txO2mQQKD09AalW5BAVN2sHpRPkEAD+cB7T0GQQA8STWWGN5BAhxxeyTIvkEA99Uj8qTSQQFC5rz\u002fxNJBAYRUlGyMwkEDqN8xnxTWQQLt7Jq2ROpBAkVeEU2U7kEAJQ9kd0F+QQBQYJmRWhZBAsY+o3dORkECI47ARqpGQQG\u002fyGVanjZBAQFXOR5mVkEBr38Y0lKGQQGGZXleEo5BAoUEADCigkEDb2ecNMJiQQImgiElVi5BAVxcaJ8RrkED5yyN07V+QQLEBCIbCUpBAV\u002fV0BSNKkECkiNc+KUyQQEsmDEXMUJBA+3epSnRKkEDjwXQ9YUeQQMEEgjGqQpBAlpayZlw+kECsY5VHhzuQQPGKnzcFO5BA5omcBFg5kEBWoY2cVTyQQEIkgETuOpBAI3bVtIYykEBEg9kydCOQQLezPv33I5BApmXjFUwjkEBB7tnWQSuQQC+\u002f6eN5K5BApFeKY9QrkEBXEveTiimQQCo1inBnJJBADm2V9sQYkEAZPkqL8w6QQHjKKofVEpBA5yQCKJsWkEACCYj5ORmQQKCmnxilGJBAOzXBtK8UkEB+hRyIsBSQQGZgPiEtBZBAY+szP07lj0BmsJwUT6aPQKVidQaXd49AcWV27RpGj0CLjEYylSaPQCh\u002f6giFAo9AVQWLJuPXjkB+r\u002fdoW6eOQEE9Kau2hI5AIqV6gsNWjkA3iZPXKC2OQG8Oqipr+41AZGL7fprLjUCkQNdv1KSNQJTAwsnQeo1AJCjtDqNXjUDLwuJlNjCNQPUdCtMFCY1A9tGzr0PvjECVpd9Y6taMQPXeK8FUv4xADh8DfvGfjEDQiXBNHY2MQDbeKMxxdIxAJU966fJZjEDMUxlK20iMQA4bI8mPSIxAVs\u002fi7xE+jEBycpw9rSiMQO1\u002fyvq6IoxAE8nbH3ArjEB\u002f2saZhj2MQPlXj2bXT4xAjIw4+CFHjEBCBeo1bkKMQAuXiiEsPIxAR3BAmNJOjECWZcDJtDKMQALiofzhFoxAuZvbdn0cjEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#00FF00","width":1},"mode":"lines","name":"EMA50","x":["2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-15T00:00:00.000000000","2026-10-16T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-22T00:00:00.000000000","2026-10-23T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-29T00:00:00.000000000","2026-10-30T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-05T00:00:00.000000000","2026-11-06T00:00:00.000000000","2026-11-09T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAoAhBjUCDgoJiW0GNQAEZMmugRI1Af5CeB\u002fpLjUACuPdsq0yNQC8VAvmtTI1AMuztXjZHjUAI\u002fEgvjVKNQOCr0pFTX41AggRm10JujUDsmvhT7HuNQN6ZrdCniY1ANfPOWIyajUBvrZ4gH7CNQNndAcpwzY1AzHqx3ZrujUCSDDIHHQeOQCggOlfELo5AvfZVWwdEjkDZtXAHblqOQKSavJ3la45AFheXoRZzjkAfB27IuISOQAo57Jogno5A3UUz77m6jkBhhHIGu9qOQLgGbsIf\u002fI5AXO2gDWcbj0CVa2hdhDyPQA0XKMObWI9A0cBiHSBuj0DsY+HBG3+PQC6N2As6gY9AuZtcBnODj0CtpAMt04KPQJL4eyfMhI9Av9o1bCCHj0DMcujYEZSPQGWHEXupnI9A1UB6ssCgj0AOAgIz56yPQEpSZpVUuI9ABkVYXWrAj0A9LrTejuWPQH1cJJOBBpBAWtYJeJ8QkEDPqkBfnxWQQCauyuHVGJBAYba9JrAgkEDgVMWxNCqQQNyhx2WvL5BA4\u002frsBNgykEBOMmZv2TOQQEsmWLt9MpBAKoQnHPookEAPk8GvuCaQQApMCvaKI5BAm9X6AtghkED+kILoQSSQQIbCzUi7J5BAn3SJ3LomkEAlifxs3SaQQJJRotQyJpBAloUt7oolkEAdRLOBWSWQQL2M\u002fJsCJpBAuwlXziQmkEBjE8fNICiQQLUmobFXKJBAY1cdXpwlkEDEIQ076R+QQHYllBBDIJBA\u002fiNcfiEgkEDqd0lbiCOQQCxpGfzsI5BAiuKQDF4kkED9Loa\u002ftyOQQJ6lOq\u002fUIZBAykkpFiQdkEA7nBhD7RiQQHDrXWciGpBAG8nmuWYbkECOFjjOShyQQNlClbnuG5BA4OUMcSwakED6+qKx9RmQQM2boYBdE5BA99sxdy4LkEBxavvVf\u002fqPQCxNsOb1449AByxyq1XLj0BNKuZRIbmPQMNGAJ+IpI9A1RvYLKCMj0AsibYLjnGPQLx0w01cW49A9j0vwwVAj0DEd0F1viWPQJT1TZaDB49Ak4zw10\u002fpjkCD+sNaJM6OQDNz5MYusY5ALOxJsYaWjkAwKWp+yXmOQIQYf8O5XI5AIKkGLsxEjkBRdRXJYC2OQCvkWqk8Fo5A8pSYhN37jUBXy8Ted+aNQG3Se0nEzo1Avlvbh0a2jUBhlKXgk6GNQIaEDQ\u002fwk41ASnWFXZ+CjUC7esEAFm2NQLlDGWDqXY1AAjIEDCRVjUCjxsIC6lCNQCkPpwKoTY1AlhMy6B1AjUCGx9qiajSNQIuXNptZKI1AWVARhsQmjUDT7VvNuBKNQNA0OvF6\u002foxAE4jT9rT3jEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#ff7f0e","width":1},"mode":"lines","name":"Tenkan","opacity":0.9,"x":["2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-15T00:00:00.000000000","2026-10-16T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-22T00:00:00.000000000","2026-10-23T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-29T00:00:00.000000000","2026-10-30T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-05T00:00:00.000000000","2026-11-06T00:00:00.000000000","2026-11-09T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAADAzAY5AAAAA0KMYjkAAAABgZlGOQAAAAGBmUY5AAAAAYGZRjkAAAACwHnyOQAAAADAK3I5AAAAAQOF5j0AAAABwFPGPQAAAANijLJBAAAAAWI8xkEAAAABYjzGQQAAAALieQZBAAAAAyMxkkEAAAADIzGSQQAAAAMjMZJBAAAAAyMxkkEAAAADIzGSQQAAAANj6k5BAAAAAeBSakEAAAAB4FJqQQAAAAHgUmpBAAAAAaOaakEAAAADAHvqQQAAAAJDCtJBAAAAAkMK0kEAAAABQOKaQQAAAAAAAoJBAAAAAwPWNkEAAAAAAgHiQQAAAAACAeJBAAAAAAIB4kEAAAAAgBSaQQAAAABBXLJBAAAAAEFcskEAAAAAQrsWQQAAAAKBw55BAAAAA6NHrkEAAAADo0euQQAAAAOjR65BAAAAA8KgdkUAAAADwqB2RQAAAAPCoHZFAAAAAsEcykUAAAADg+g2RQAAAANCj6JBAAAAAWLhIkEAAAABYuEiQQAAAAFi4SJBAAAAAWLhIkEAAAABoZiSQQAAAAGhmJJBAAAAAaGYkkEAAAADo0Q2QQAAAAOjRDZBAAAAAoHA3kEAAAABovUSQQAAAAGi9RJBAAAAAwMxwkEAAAADAzHCQQAAAAHA9XJBAAAAA0CMzkEAAAAD4fxmQQAAAAPh\u002fGZBAAAAA+H8ZkEAAAABoZiKQQAAAAGhmIpBAAAAAaGYikEAAAABoZiKQQAAAAGhmIpBAAAAA4PoYkEAAAADg+hiQQAAAAOD6GJBAAAAA4PoYkEAAAABgDxeQQAAAAEAKA5BAAAAAYD33j0AAAABgPeOPQAAAAHAUm49AAAAA4FE5j0AAAAAA1+COQAAAACBct45AAAAAIFy3jkAAAADA9bOOQAAAAMD1s45AAAAAwPWzjkAAAADgeiGOQAAAABDXu41AAAAA0KOsjUAAAACgcD6NQAAAAOB6MI1AAAAAQArjjEAAAABACuOMQAAAAIDrr4xAAAAA8FFjjEAAAABwZjGMQAAAAIAUIoxAAAAAYI\u002fwi0AAAACwR+KLQAAAAIAUHoxAAAAAAAAUjEAAAADAHviLQAAAAMAe+ItAAAAAwB74i0AAAADAHviLQAAAAMAe+ItAAAAAwB74i0AAAADAHviLQAAAAKCZo4tAAAAAENe5i0AAAACwRweMQAAAAAAALoxAAAAAAAAujEAAAADQzEiMQAAAANDMSIxAAAAA0MxIjEAAAADwUQeMQAAAAPBRB4xAAAAA8FEHjEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#1f77b4","width":1},"mode":"lines","name":"Kijun","opacity":0.9,"x":["2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-15T00:00:00.000000000","2026-10-16T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-22T00:00:00.000000000","2026-10-23T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-29T00:00:00.000000000","2026-10-30T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-05T00:00:00.000000000","2026-11-06T00:00:00.000000000","2026-11-09T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAADQo4yPQAAAAPD\u002f6o9AAAAAuJ4BkEAAAAC4ngGQQAAAALieAZBAAAAAuJ4BkEAAAAC4ngGQQAAAAAAAI5BAAAAAmJlekEAAAAAI12aQQAAAAAjXZpBAAAAACNdmkEAAAABo5naQQAAAAHgUmpBAAAAAeBSakEAAAAB4FJqQQAAAAHgUmpBAAAAAeBSakEAAAACIwr+QQAAAAFgP1JBAAAAAWA\u002fUkEAAAABYD9SQQAAAAEjh1JBAAAAA4PrZkEAAAADg+tmQQAAAAOD62ZBAAAAA4PrZkEAAAADg+tmQQAAAAOD62ZBAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAADITKSQQAAAAFi4SJBAAAAAWLhIkEAAAABYuEiQQAAAAFi4SJBAAAAAaGYkkEAAAABoZiSQQAAAAGhmJJBAAAAA6NENkEAAAADo0Q2QQAAAACBcNJBAAAAAIFw0kEAAAAAgXDSQQAAAACBcNJBAAAAAIFw0kEAAAAAgBSKQQAAAANDM6Y9AAAAAQAqIj0AAAABgjy+PQAAAAIAUBo9AAAAAgBQGj0AAAACAFAaPQAAAAIAUBo9AAAAAgBQGj0AAAADQzOiOQAAAANDM6I5AAAAAgBTojkAAAADger2OQAAAACCFr45AAAAAgD1ejkAAAABAMzaOQAAAACBcJ45AAAAAIFwTjkAAAACgcOGNQAAAAKBw4Y1AAAAAoHDhjUAAAACgcOGNQAAAAKBw4Y1AAAAAwPXTjUAAAACAFLiNQAAAAIAUuI1AAAAAUOFCjUAAAACAPd2MQAAAAJDCzoxAAAAAACmLjEAAAAAAKYuMQAAAAAApi4xAAAAAACmLjEAAAABACliMQAAAAOCjGYxAAAAA4KMZjEAAAADgoxmMQAAAAOCjGYxAAAAA4KMZjEAAAADwUQeMQAAAAPBRB4xAAAAA8FEHjEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#2ca02c","width":1},"mode":"lines","name":"Span A","opacity":0.7,"x":["2026-06-06T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-31T00:00:00.000000000","2026-11-01T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-07T00:00:00.000000000","2026-11-08T00:00:00.000000000","2026-11-09T00:00:00.000000000","2026-11-10T00:00:00.000000000","2026-11-11T00:00:00.000000000","2026-11-14T00:00:00.000000000","2026-11-15T00:00:00.000000000","2026-11-16T00:00:00.000000000","2026-11-17T00:00:00.000000000","2026-11-18T00:00:00.000000000","2026-11-21T00:00:00.000000000","2026-11-22T00:00:00.000000000","2026-11-23T00:00:00.000000000","2026-11-24T00:00:00.000000000","2026-11-25T00:00:00.000000000","2026-11-28T00:00:00.000000000","2026-11-29T00:00:00.000000000","2026-11-30T00:00:00.000000000","2026-12-01T00:00:00.000000000","2026-12-02T00:00:00.000000000","2026-12-05T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAABYjxWQQAAAAGi9RJBAAAAAmNlNkEAAAACY2U2QQAAAAJjZTZBAAAAAkEJOkEAAAAC83n2QQAAAAEjha5BAAAAAFK6JkEAAAACsh4aQQAAAAIRrg5BAAAAAZGZ6kEAAAAA0s3eQQAAAADxKiZBAAAAAPEqJkEAAAADMDGCQQAAAAMQ1Y5BAAAAAxDVjkEAAAABMuMKQQAAAAPy\u002f3ZBAAAAAoPDfkEAAAACg8N+QQAAAAJhZ4JBAAAAA6NH7kEAAAADo0fuQQAAAAOjR+5BAAAAASCEGkUAAAADg+vOQQAAAAFhP4ZBAAAAA0Ax4kEAAAADQDHiQQAAAANAMeJBAAAAA0Ax4kEAAAADY42WQQAAAANjjZZBAAAAA2ONlkEAAAACYmVqQQAAAAJiZWpBAAAAA9GhvkEAAAABYD3aQQAAAAFgPdpBAAAAABBeMkEAAAAAEF4yQQAAAAFzPgZBAAAAAjEJtkEAAAABg5l6QQAAAACgcMZBAAAAAKBwxkEAAAABgjzWQQAAAAGCPNZBAAAAAaGYjkEAAAABoZiOQQAAAAGhmI5BAAAAAZGYTkEAAAABkZhOQQAAAAICrJpBAAAAAgKsmkEAAAADAtSWQQAAAADCzG5BAAAAAaP0XkEAAAADo0QmQQAAAAKBwwo9AAAAAEK5gj0AAAAAwMwiPQAAAAFC43o5AAAAAULjejkAAAAAgBd2OQAAAACAF3Y5AAAAAIAXdjkAAAADYI4WOQAAAAPBRUo5AAAAAKFxKjkAAAADA9f2NQAAAAAAA8I1AAAAA4KOgjUAAAADAnoyNQAAAANCja41AAAAACFc7jUAAAACIawmNQAAAAJDCAY1AAAAAAADpjEAAAAAo3OGMQAAAAJDC\u002f4xAAAAA4PrzjEAAAACgGdiMQAAAAKAZ2IxAAAAACICdjEAAAAAgrmqMQAAAAKhwY4xAAAAA4KNBjEAAAADgo0GMQAAAAFBhF4xAAAAACIAijEAAAAD4qC+MQAAAAPDRI4xAAAAA8NEjjEAAAABYODGMQAAAAFg4MYxAAAAAWDgxjEAAAADwUQeMQAAAAPBRB4xAAAAA8FEHjEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#d62728","width":1},"mode":"lines","name":"Span B","opacity":0.7,"x":["2026-06-06T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-31T00:00:00.000000000","2026-11-01T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-07T00:00:00.000000000","2026-11-08T00:00:00.000000000","2026-11-09T00:00:00.000000000","2026-11-10T00:00:00.000000000","2026-11-11T00:00:00.000000000","2026-11-14T00:00:00.000000000","2026-11-15T00:00:00.000000000","2026-11-16T00:00:00.000000000","2026-11-17T00:00:00.000000000","2026-11-18T00:00:00.000000000","2026-11-21T00:00:00.000000000","2026-11-22T00:00:00.000000000","2026-11-23T00:00:00.000000000","2026-11-24T00:00:00.000000000","2026-11-25T00:00:00.000000000","2026-11-28T00:00:00.000000000","2026-11-29T00:00:00.000000000","2026-11-30T00:00:00.000000000","2026-12-01T00:00:00.000000000","2026-12-02T00:00:00.000000000","2026-12-05T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAeJQ1kEAAAAB4lDWQQAAAAJiZO5BAAAAAmJk7kEAAAACYmTuQQAAAAJiZO5BAAAAAmJk7kEAAAADg+lyQQAAAAHiUmJBAAAAA6NGgkEAAAADo0aCQQAAAAOjRoJBAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAAwPV4kEAAAABQuEyQQAAAAOD6N5BAAAAA4Po3kEAAAADg+jeQQAAAAOD6N5BAAAAA4Po3kEAAAAAIVymQQAAAAAhXKZBAAAAAYOYlkEAAAABACmqPQAAAAIAUXI9AAAAA4KMOj0AAAADgow6PQAAAAAAAxo5AAAAAAADGjkAAAACAFJSOQAAAAIDrZo5AAAAAgOtmjkAAAACA62aOQAAAAIDrZo5AAAAAANdcjkAAAADA9UCOQAAAAMD1QI5AAAAAwEccjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABQ4feNQAAAAFAK9I1AAAAAEADMjUA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"fill":"toself","fillcolor":"rgba(111, 168, 220, 0.2)","hoverinfo":"skip","line":{"width":0},"name":"Cloud","showlegend":true,"x":["2026-06-06T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-31T00:00:00.000000000","2026-11-01T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-07T00:00:00.000000000","2026-11-08T00:00:00.000000000","2026-11-09T00:00:00.000000000","2026-11-10T00:00:00.000000000","2026-11-11T00:00:00.000000000","2026-11-14T00:00:00.000000000","2026-11-15T00:00:00.000000000","2026-11-16T00:00:00.000000000","2026-11-17T00:00:00.000000000","2026-11-18T00:00:00.000000000","2026-11-21T00:00:00.000000000","2026-11-22T00:00:00.000000000","2026-11-23T00:00:00.000000000","2026-11-24T00:00:00.000000000","2026-11-25T00:00:00.000000000","2026-11-28T00:00:00.000000000","2026-11-29T00:00:00.000000000","2026-11-30T00:00:00.000000000","2026-12-01T00:00:00.000000000","2026-12-02T00:00:00.000000000","2026-12-05T00:00:00.000000000","2026-12-05T00:00:00.000000000","2026-12-02T00:00:00.000000000","2026-12-01T00:00:00.000000000","2026-11-30T00:00:00.000000000","2026-11-29T00:00:00.000000000","2026-11-28T00:00:00.000000000","2026-11-25T00:00:00.000000000","2026-11-24T00:00:00.000000000","2026-11-23T00:00:00.000000000","2026-11-22T00:00:00.000000000","2026-11-21T00:00:00.000000000","2026-11-18T00:00:00.000000000","2026-11-17T00:00:00.000000000","2026-11-16T00:00:00.000000000","2026-11-15T00:00:00.000000000","2026-11-14T00:00:00.000000000","2026-11-11T00:00:00.000000000","2026-11-10T00:00:00.000000000","2026-11-09T00:00:00.000000000","2026-11-08T00:00:00.000000000","2026-11-07T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-01T00:00:00.000000000","2026-10-31T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-25T00:00:00.000000000","2026-10-24T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-18T00:00:00.000000000","2026-10-17T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-07T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-07T00:00:00.000000000","2026-06-06T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAABYjxWQQAAAAGi9RJBAAAAAmNlNkEAAAACY2U2QQAAAAJjZTZBAAAAAkEJOkEAAAAC83n2QQAAAAEjha5BAAAAAFK6JkEAAAACsh4aQQAAAAIRrg5BAAAAAZGZ6kEAAAAA0s3eQQAAAADxKiZBAAAAAPEqJkEAAAADMDGCQQAAAAMQ1Y5BAAAAAxDVjkEAAAABMuMKQQAAAAPy\u002f3ZBAAAAAoPDfkEAAAACg8N+QQAAAAJhZ4JBAAAAA6NH7kEAAAADo0fuQQAAAAOjR+5BAAAAASCEGkUAAAADg+vOQQAAAAFhP4ZBAAAAA0Ax4kEAAAADQDHiQQAAAANAMeJBAAAAA0Ax4kEAAAADY42WQQAAAANjjZZBAAAAA2ONlkEAAAACYmVqQQAAAAJiZWpBAAAAA9GhvkEAAAABYD3aQQAAAAFgPdpBAAAAABBeMkEAAAAAEF4yQQAAAAFzPgZBAAAAAjEJtkEAAAABg5l6QQAAAACgcMZBAAAAAKBwxkEAAAABgjzWQQAAAAGCPNZBAAAAAaGYjkEAAAABoZiOQQAAAAGhmI5BAAAAAZGYTkEAAAABkZhOQQAAAAICrJpBAAAAAgKsmkEAAAADAtSWQQAAAADCzG5BAAAAAaP0XkEAAAADo0QmQQAAAAKBwwo9AAAAAEK5gj0AAAAAwMwiPQAAAAFC43o5AAAAAULjejkAAAAAgBd2OQAAAACAF3Y5AAAAAIAXdjkAAAADYI4WOQAAAAPBRUo5AAAAAKFxKjkAAAADA9f2NQAAAAAAA8I1AAAAA4KOgjUAAAADAnoyNQAAAANCja41AAAAACFc7jUAAAACIawmNQAAAAJDCAY1AAAAAAADpjEAAAAAo3OGMQAAAAJDC\u002f4xAAAAA4PrzjEAAAACgGdiMQAAAAKAZ2IxAAAAACICdjEAAAAAgrmqMQAAAAKhwY4xAAAAA4KNBjEAAAADgo0GMQAAAAFBhF4xAAAAACIAijEAAAAD4qC+MQAAAAPDRI4xAAAAA8NEjjEAAAABYODGMQAAAAFg4MYxAAAAAWDgxjEAAAADwUQeMQAAAAPBRB4xAAAAA8FEHjEAAAAAQAMyNQAAAAFAK9I1AAAAAUOH3jUAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAABAMwqOQAAAAEAzCo5AAAAAQDMKjkAAAADARxyOQAAAAMD1QI5AAAAAwPVAjkAAAAAA11yOQAAAAIDrZo5AAAAAgOtmjkAAAACA62aOQAAAAIDrZo5AAAAAgBSUjkAAAAAAAMaOQAAAAAAAxo5AAAAA4KMOj0AAAADgow6PQAAAAIAUXI9AAAAAQApqj0AAAABg5iWQQAAAAAhXKZBAAAAACFcpkEAAAADg+jeQQAAAAOD6N5BAAAAA4Po3kEAAAADg+jeQQAAAAOD6N5BAAAAAULhMkEAAAADA9XiQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAEhhp5BAAAAASGGnkEAAAABIYaeQQAAAAOjRoJBAAAAA6NGgkEAAAADo0aCQQAAAAHiUmJBAAAAA4PpckEAAAACYmTuQQAAAAJiZO5BAAAAAmJk7kEAAAACYmTuQQAAAAJiZO5BAAAAAeJQ1kEAAAAB4lDWQQAAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fw=="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#9467bd","width":1},"mode":"lines","name":"Chikou","opacity":0.8,"x":["2026-04-15T00:00:00.000000000","2026-04-16T00:00:00.000000000","2026-04-17T00:00:00.000000000","2026-04-18T00:00:00.000000000","2026-04-19T00:00:00.000000000","2026-04-22T00:00:00.000000000","2026-04-23T00:00:00.000000000","2026-04-24T00:00:00.000000000","2026-04-25T00:00:00.000000000","2026-04-26T00:00:00.000000000","2026-04-30T00:00:00.000000000","2026-05-01T00:00:00.000000000","2026-05-02T00:00:00.000000000","2026-05-03T00:00:00.000000000","2026-05-06T00:00:00.000000000","2026-05-07T00:00:00.000000000","2026-05-08T00:00:00.000000000","2026-05-09T00:00:00.000000000","2026-05-10T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-16T00:00:00.000000000","2026-05-17T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-23T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-05-30T00:00:00.000000000","2026-05-31T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-06T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-13T00:00:00.000000000","2026-06-14T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-19T00:00:00.000000000","2026-06-20T00:00:00.000000000","2026-06-21T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-27T00:00:00.000000000","2026-06-28T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-03T00:00:00.000000000","2026-07-04T00:00:00.000000000","2026-07-05T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-11T00:00:00.000000000","2026-07-12T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-18T00:00:00.000000000","2026-07-19T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-25T00:00:00.000000000","2026-07-26T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-01T00:00:00.000000000","2026-08-02T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-08T00:00:00.000000000","2026-08-09T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-15T00:00:00.000000000","2026-08-16T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-22T00:00:00.000000000","2026-08-23T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-29T00:00:00.000000000","2026-08-30T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-05T00:00:00.000000000","2026-09-06T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-12T00:00:00.000000000","2026-09-13T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-19T00:00:00.000000000","2026-09-20T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-26T00:00:00.000000000","2026-09-27T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-03T00:00:00.000000000","2026-10-04T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-10T00:00:00.000000000","2026-10-11T00:00:00.000000000","2026-10-14T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAoAhBjUAAAAAAR0mNQAAAAMC7lI1AAAAAgA0AjkAAAACgpV2NQAAAAGDsTI1AAAAAIETBjEAAAAAgXGiOQAAAAABQmI5AAAAAACncjkAAAADApMqOQAAAAEAZ2o5AAAAAYGs4j0AAAABAq8CPQAAAAMDgTZBAAAAA4JCNkEAAAAAAyS+QQAAAAMAj\u002fZBAAAAAoHgmkEAAAADAoD+QQAAAAMDrC5BAAAAAgEcjj0AAAADAXhqQQAAAACBIhpBAAAAAQLO7kEAAAADgavWQQAAAAOAhF5FAAAAA4NwMkUAAAABA6TORQAAAAIBsBJFAAAAAYKW+kEAAAACAmI+QQAAAACAgtY9AAAAAAOe5j0AAAADghnOPQAAAACAgtY9AAAAAADHAj0AAAABglmiQQAAAAECWN5BAAAAAwHwCkEAAAABAS2uQQAAAAEAmaJBAAAAAAEBDkEAAAACgxrmRQAAAAADS6ZFAAAAA4HsIkUAAAAAAHZCQQAAAAGCNZ5BAAAAAwBPhkEAAAAAAZBORQAAAAKDttZBAAAAAQDuAkEAAAAAgfEyQQAAAAAA3EZBAAAAAwMJ\u002fjkAAAACg696PQAAAAGBVq49AAAAAgG\u002fwj0AAAABgZF+QQAAAAADZfJBAAAAAgDAOkEAAAABALCqQQAAAAEDfFZBAAAAAYHkVkEAAAACgniCQQAAAAKAxNpBAAAAAoGopkEAAAADAvliQQAAAAICYLZBAAAAAwF3Fj0AAAADAiCiPQAAAAADcKJBAAAAAAOsckEAAAACA4HaQQAAAAGCOLZBAAAAAIDAvkEAAAABgzROQQAAAAEAz549AAAAA4HpUj0AAAAAgXGOPQAAAAGC4N5BAAAAAoHA6kEAAAADAHjKQQAAAAMAeE5BAAAAAACnej0AAAABguBSQQAAAAKCZ445AAAAAIFyFjkAAAAAA10+NQAAAAIDCu41AAAAAAABwjUAAAADAHvuNQAAAAIDrq41AAAAAQOFCjUAAAADgUdqMQAAAAKCZO41AAAAAgD2ijEAAAACA66GMQAAAAEDhIoxAAAAAIFwFjEAAAADgejSMQAAAACCu64tAAAAAoHAJjEAAAAAgrrmLQAAAAGC4lItAAAAAYI\u002f6i0AAAACgme+LQAAAAKBH34tAAAAAgMJ1i0AAAACAPdqLQAAAAIAUiotAAAAAgD1ei0AAAADgeqaLQAAAAIDCRYxAAAAAYGbai0AAAACgcF2LQAAAAIA96otAAAAAACl+jEAAAAAgXOmMQAAAAADX\u002fYxAAAAAYGb0i0AAAACAwhWMQAAAAGC4AIxAAAAAAAAAjUAAAACgmSeLQAAAAGCPDotAAAAAgMJRjEA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"marker":{"color":["#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#ef4444","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a","#26a69a","#26a69a","#ef4444","#26a69a","#ef4444","#26a69a","#ef4444","#ef4444","#ef4444","#ef4444","#26a69a","#ef4444","#ef4444","#26a69a"]},"name":"Volume","showlegend":false,"x":["2026-05-11T00:00:00.000000000","2026-05-12T00:00:00.000000000","2026-05-13T00:00:00.000000000","2026-05-14T00:00:00.000000000","2026-05-15T00:00:00.000000000","2026-05-18T00:00:00.000000000","2026-05-19T00:00:00.000000000","2026-05-20T00:00:00.000000000","2026-05-21T00:00:00.000000000","2026-05-22T00:00:00.000000000","2026-05-26T00:00:00.000000000","2026-05-27T00:00:00.000000000","2026-05-28T00:00:00.000000000","2026-05-29T00:00:00.000000000","2026-06-01T00:00:00.000000000","2026-06-02T00:00:00.000000000","2026-06-03T00:00:00.000000000","2026-06-04T00:00:00.000000000","2026-06-05T00:00:00.000000000","2026-06-08T00:00:00.000000000","2026-06-09T00:00:00.000000000","2026-06-10T00:00:00.000000000","2026-06-11T00:00:00.000000000","2026-06-12T00:00:00.000000000","2026-06-15T00:00:00.000000000","2026-06-16T00:00:00.000000000","2026-06-17T00:00:00.000000000","2026-06-18T00:00:00.000000000","2026-06-22T00:00:00.000000000","2026-06-23T00:00:00.000000000","2026-06-24T00:00:00.000000000","2026-06-25T00:00:00.000000000","2026-06-26T00:00:00.000000000","2026-06-29T00:00:00.000000000","2026-06-30T00:00:00.000000000","2026-07-01T00:00:00.000000000","2026-07-02T00:00:00.000000000","2026-07-06T00:00:00.000000000","2026-07-07T00:00:00.000000000","2026-07-08T00:00:00.000000000","2026-07-09T00:00:00.000000000","2026-07-10T00:00:00.000000000","2026-07-13T00:00:00.000000000","2026-07-14T00:00:00.000000000","2026-07-15T00:00:00.000000000","2026-07-16T00:00:00.000000000","2026-07-17T00:00:00.000000000","2026-07-20T00:00:00.000000000","2026-07-21T00:00:00.000000000","2026-07-22T00:00:00.000000000","2026-07-23T00:00:00.000000000","2026-07-24T00:00:00.000000000","2026-07-27T00:00:00.000000000","2026-07-28T00:00:00.000000000","2026-07-29T00:00:00.000000000","2026-07-30T00:00:00.000000000","2026-07-31T00:00:00.000000000","2026-08-03T00:00:00.000000000","2026-08-04T00:00:00.000000000","2026-08-05T00:00:00.000000000","2026-08-06T00:00:00.000000000","2026-08-07T00:00:00.000000000","2026-08-10T00:00:00.000000000","2026-08-11T00:00:00.000000000","2026-08-12T00:00:00.000000000","2026-08-13T00:00:00.000000000","2026-08-14T00:00:00.000000000","2026-08-17T00:00:00.000000000","2026-08-18T00:00:00.000000000","2026-08-19T00:00:00.000000000","2026-08-20T00:00:00.000000000","2026-08-21T00:00:00.000000000","2026-08-24T00:00:00.000000000","2026-08-25T00:00:00.000000000","2026-08-26T00:00:00.000000000","2026-08-27T00:00:00.000000000","2026-08-28T00:00:00.000000000","2026-08-31T00:00:00.000000000","2026-09-01T00:00:00.000000000","2026-09-02T00:00:00.000000000","2026-09-03T00:00:00.000000000","2026-09-04T00:00:00.000000000","2026-09-08T00:00:00.000000000","2026-09-09T00:00:00.000000000","2026-09-10T00:00:00.000000000","2026-09-11T00:00:00.000000000","2026-09-14T00:00:00.000000000","2026-09-15T00:00:00.000000000","2026-09-16T00:00:00.000000000","2026-09-17T00:00:00.000000000","2026-09-18T00:00:00.000000000","2026-09-21T00:00:00.000000000","2026-09-22T00:00:00.000000000","2026-09-23T00:00:00.000000000","2026-09-24T00:00:00.000000000","2026-09-25T00:00:00.000000000","2026-09-28T00:00:00.000000000","2026-09-29T00:00:00.000000000","2026-09-30T00:00:00.000000000","2026-10-01T00:00:00.000000000","2026-10-02T00:00:00.000000000","2026-10-05T00:00:00.000000000","2026-10-06T00:00:00.000000000","2026-10-07T00:00:00.000000000","2026-10-08T00:00:00.000000000","2026-10-09T00:00:00.000000000","2026-10-12T00:00:00.000000000","2026-10-13T00:00:00.000000000","2026-10-14T00:00:00.000000000","2026-10-15T00:00:00.000000000","2026-10-16T00:00:00.000000000","2026-10-19T00:00:00.000000000","2026-10-20T00:00:00.000000000","2026-10-21T00:00:00.000000000","2026-10-22T00:00:00.000000000","2026-10-23T00:00:00.000000000","2026-10-26T00:00:00.000000000","2026-10-27T00:00:00.000000000","2026-10-28T00:00:00.000000000","2026-10-29T00:00:00.000000000","2026-10-30T00:00:00.000000000","2026-11-02T00:00:00.000000000","2026-11-03T00:00:00.000000000","2026-11-04T00:00:00.000000000","2026-11-05T00:00:00.000000000","2026-11-06T00:00:00.000000000","2026-11-09T00:00:00.000000000"],"y":{"dtype":"f8","bdata":"AAAAAMRlQkEAAAAAKhBBQQAAAAAA+EFBAAAAABD2PEEAAAAALGw8QQAAAACgAjdBAAAAAIT3OkEAAAAASK9HQQAAAACmtUJBAAAAAKxZPUEAAAAAWL8\u002fQQAAAAAcv0BBAAAAAHRXQUEAAAAA2HZAQQAAAABmWERBAAAAAJA3QEEAAAAATIxDQQAAAABQ50NBAAAAAKwrREEAAAAAVsBBQQAAAACK4kVBAAAAADBzQUEAAAAAtotDQQAAAACY1EBBAAAAADAJQkEAAAAAvP09QQAAAADQoUBBAAAAAMApUUEAAAAAAOg8QQAAAADUiT9BAAAAACx\u002fPUEAAAAAMME9QQAAAAAalU5BAAAAAODLPEEAAAAAWCFIQQAAAABYeTpBAAAAAEyNN0EAAAAAIMU6QQAAAAAcpzRBAAAAALjsOUEAAAAAyPIyQQAAAABI8jBBAAAAAEx1O0EAAAAAbO9MQQAAAABQ4URBAAAAADxMQ0EAAAAABoBAQQAAAAAcODpBAAAAAEg5OkEAAAAAjHo3QQAAAAAcRTxBAAAAABgUNUEAAAAAyl5DQQAAAABWlEBBAAAAAOBmSEEAAAAAWMhBQQAAAAAktTdBAAAAAAQKOkEAAAAA0D5EQQAAAACAJTlBAAAAACRYOkEAAAAAmM81QQAAAADcwTtBAAAAALTpO0EAAAAASIQ6QQAAAACEsTVBAAAAAEROOEEAAAAAoCE2QQAAAADQIT1BAAAAAMTvREEAAAAAKMw6QQAAAABg70RBAAAAAKxTPkEAAAAAig1DQQAAAAActDZBAAAAAHQhOkEAAAAArBEwQQAAAAC4vzRBAAAAAGApPEEAAAAAyrtAQQAAAACIkDlBAAAAAAjONUEAAAAAYEYzQQAAAACgWjlBAAAAAMTxPEEAAAAA+L4xQQAAAADE1UBBAAAAAAD4QUEAAAAALA5LQQAAAABWE0lBAAAAANRdTkEAAAAAWG08QQAAAACUUT9BAAAAABZDQEEAAAAA7PJBQQAAAACs1j1BAAAAANzaO0EAAAAAIFU8QQAAAABE0jtBAAAAAJSyQ0EAAAAAZIM4QQAAAABU8zxBAAAAALxCP0EAAAAAYjtCQQAAAACcwTpBAAAAAChcPEEAAAAAiDBAQQAAAAAS1lJBAAAAAJYTSkEAAAAA3PdCQQAAAABWJEJBAAAAAKIiQ0EAAAAAYoxBQQAAAAAQGUNBAAAAAAQFP0EAAAAAYC87QQAAAAAcXjxBAAAAAIQ8PEEAAAAA0O88QQAAAAC8qjZBAAAAAEZtQEEAAAAAgF48QQAAAACQ4TVBAAAAADqDRUEAAAAAGJNNQQAAAADg7kJBAAAAANB4QEE="},"type":"bar","xaxis":"x2","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x2","showticklabels":false,"rangeslider":{"visible":false},"title":{"text":""},"fixedrange":true},"yaxis":{"anchor":"x","domain":[0.33499999999999996,0.9999999999999999],"title":{"text":"Price"},"fixedrange":true},"xaxis2":{"anchor":"y2","domain":[0.0,1.0]},"yaxis2":{"anchor":"x2","domain":[0.0,0.285],"title":{"text":"Volume"},"fixedrange":true},"shapes":[{"fillcolor":"rgba(96,165,250,0.2)","layer":"below","line":{"width":0},"type":"rect","x0":"2026-11-08T00:00:00","x1":"2026-11-14T00:00:00","xref":"x domain","y0":829.58,"y1":937.72,"yref":"y"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":829.58,"y1":829.58,"yref":"y"},{"line":{"color":"lightskyblue","dash":"dot","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":937.72,"y1":937.72,"yref":"y"},{"line":{"color":"#f59e0b","dash":"dash","width":1},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":885.08,"y1":885.08,"yref":"y"}],"annotations":[{"showarrow":false,"text":"5-Day ±1σ (option-implied)","x":0,"xanchor":"left","xref":"x domain","y":937.72,"yanchor":"top","yref":"y"},{"showarrow":false,"text":"Session open (anchor) — close +2.55% from band centre","x":0,"xanchor":"left","xref":"x domain","y":885.08,"yanchor":"top","yref":"y"}],"font":{"size":13},"margin":{"l":48,"r":16,"t":44,"b":36},"autosize":true,"title":{"text":"GS — Price Chart"},"dragmode":false,"hovermode":"x unified"},                        {"responsive": true, "scrollZoom": false, "doubleClick": false, "displayModeBar": false, "displaylogo": false}                    )                };            </script>        </div>
+        
+      </div>
+      <div class="small">See the “Trend &amp; Volatility” table for EMA/ATR/momentum details.</div>
+    </section>
+
+    
+    <section id="agents-raw" class="sect">
+      <h3>🧾 Detailed Agent Analyses</h3>
+
+      <div class="grid-3" style="margin-top:10px">
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Fundamental</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> Goldman Sachs exhibits strong profitability with a favorable P/E ratio and solid dividend yield, suggesting a stable investment with moderate growth potential.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Strong EPS of 69.55 USD supports positive outlook.</li><li>P/E ratio of 13.03 indicates reasonable valuation relative to earnings.</li><li>Dividend yield of 2.31% adds defensive quality to the investment.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Sentiment</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> The outlook for GS is positive, supported by positive news and congressional buying activity.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Positive news sentiment enhances optimism around GS.</li><li>Congressional buying indicates smart-money confidence.</li><li>Lack of social data limits the volatility assessment.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Technical</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> Goldman Sachs is potentially set for bullish movement, with price positioned near the upper edge of the option band and bullish indicators from options assessment. Elevated implied volatility suggests heightened upcoming movement.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Price near the upper edge of the option band (pct_to_high positive); opted for a continuation read due to bullish option indicators.</li><li>RSI at 50.26 is neutral, providing no directional bias.</li><li>EMA alignment (20 &lt; 50) suggests a short-term downtrend (-0.2).</li><li>Options assessment contributes to bullish direction (dir_score +0.0905, vol_score +0.2275).</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Ichimoku</b>
+              
+              <span class="pill">conf 0.60</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> The stock price is floating within the cloud, meaning it&#39;s in a neutral zone. Although currently strong, there might be bearish twists looming ahead judging by the future cloud. Keep an eye on the base line as it&#39;s both a support and a potential risk loss level.</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>Price is inside the cloud indicating neutral strength.</li><li>Future cloud is bear indicating potential bearish shift ahead.</li><li>Chikou line is above current price suggesting past strength over 26 periods.</li><li>Cross signal is none indicating no recent momentum change.</li>
+              </ul>
+            
+          </div>
+        
+          <div class="card">
+            <div class="stat" style="justify-content:space-between">
+              <b>Options</b>
+              
+              <span class="pill">conf 0.85</span>
+            </div>
+
+            <!-- 간단 요약(있는 경우) -->
+            
+              <div class="small" style="margin-top:6px"><b>Summary:</b> Call wall $1060.00 (1.75σ, 8% touch prob) far resistance, 31d left</div>
+            
+            
+              <ul class="small" style="margin-top:6px">
+                <li>IV Percentile 95.3 — options rich vs the last 3 months</li><li>Max pain $910.00 (0.04σ, 96.6% touch prob) near spot, 31d left</li>
+              </ul>
+            
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- forecast + quant -->
+    <section id="forecast" class="sect grid-2">
+      <div class="card">
+        <b>🔮 Expected Range</b>
+        <div class="stat">
+          <span class="chip">IV-skew+ATR</span>
+          <span class="muted">DTE: 30</span>
+        </div>
+        <div style="margin-top:8px">
+          <div><b>Low–High:</b> $829.58–$937.72</div>
+          <div><b>Anchor (session open):</b> $885.08</div>
+          <div><b>Band mid:</b> $883.65 <span class="muted">-0.16% vs session open (downside)</span></div>
+          <div><b>Close vs band centre:</b> +2.55% from band centre (above centre) <span class="muted">-8.46% to low · +3.48% to high</span></div>
+          <div class="small">Inputs: open $885.08, close $906.22, IV30 33.3% (rank 83), ATR14 29.72</div>
+          <div class="small muted">The band is built around the <b>opening price of the 2026-11-09 session</b>, so its centre is a fixed reference rather than today's price. Width comes from option-implied volatility; the 25&Delta; risk reversal makes the two legs asymmetric. It is never shifted by the agents' stance.</div>
+        </div>
+      </div>
+      <div class="card">
+        <b>📊 Trend &amp; Volatility</b>
+        <div class="table-scroll">
+          <table class="tbl rtable">
+            <thead>
+              <tr><th>RSI(14)</th><th>ATR(14)</th><th>EMA20</th><th>EMA50</th><th>EMA200</th><th>1M</th><th>3M</th><th>6M</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="RSI(14)">50.26</td>
+                <td data-label="ATR(14)">29.72</td>
+                <td data-label="EMA20">$899.56</td>
+                <td data-label="EMA50">$926.96</td>
+                <td data-label="EMA200">—</td>
+                <td data-label="1M">1.4%</td>
+                <td data-label="3M">-12.2%</td>
+                <td data-label="6M">-3.3%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- options -->
+    <section id="options" class="sect">
+      <h3>🧩 Options: IV, PCR, Dealer Levels</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead>
+            <tr>
+              <th>IV30</th><th>P/C Vol</th><th>P/C OI</th>
+              <th>Call Wall</th><th>Put Wall</th><th>Gamma Flip</th><th>Max Pain</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="IV30">33.3% (rank 83)</td>
+              <td data-label="P/C Vol">0.60</td>
+              <td data-label="P/C OI">0.60</td>
+              <td data-label="Call Wall">$1,060.00</td>
+              <td data-label="Put Wall">$540.00</td>
+              <td data-label="Gamma Flip">$907.76</td>
+              <td data-label="Max Pain">$910.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small">Source: Finnhub Option Chain API</div>
+    </section>
+
+
+    <!-- short -->
+    <section id="short" class="sect">
+      <h3>📉 Short Interest / Borrow</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead>
+            <tr><th>SI(sh)</th><th>SI% Float</th><th>DTC</th><th>SVR</th><th>Borrow Fee</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="SI(sh)">6,940,000</td>
+              <td data-label="SI% Float">2.4%</td>
+              <td data-label="DTC">3.29</td>
+              <td data-label="SVR">—</td>
+              <td data-label="Borrow Fee">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small">SI/DTC are monthly/bi-monthly figures; SVR is the FINRA daily ratio; borrow fee is a broker estimate.</div>
+    </section>
+
+
+    <!-- news & social -->
+    <section id="news" class="sect">
+      <h3>📰 Recent News</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead><tr><th>Headline</th><th>Source</th><th>Published</th></tr></thead>
+          <tbody>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE84aUFJMHlnZmJYWFByZ0R0U01tSHpSUnFCd2tMc3FtNHI5WDRYV2pTdW9pcHRsRzc2eXctUTRRUjRYdXBVTDlFX2g3V3NmN00?oc=5">The Goldman Sachs Group, Inc. (GS) Stock Price, News, Quote &amp; History - Yahoo! Finance Canada</a></td>
+                <td data-label="Source" class="small">Yahoo! Finance Canada</td>
+                <td data-label="Published" class="small">Mon, 09 Nov 2026 13:08:37 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMikgFBVV95cUxNSVlaOFFNdnR2SUxtc2lVRk41dVRXWlE3OExERDFCY0dHbkNnVWM2eVFIc3lxbmJEYjVJUWI1NFFYblhZdEZqV0lvX091cXpRMFZva0NrQ2dyV1BpdWs5a1FhcExyQTl2MzZzdG1WQ2dGM3UtNHlMNy1rRElKNXNaZzZERlZHSlZ1M2E1QmtYRU13Zw?oc=5">GS: Goldman sets auto-callable notes tied to CrowdStrike and Palo Alto - Quantisnow</a></td>
+                <td data-label="Source" class="small">Quantisnow</td>
+                <td data-label="Published" class="small">Mon, 09 Nov 2026 19:22:46 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOQUtCeHB3eS1lZElnRjZKMFpqcW1aaVNYTzFzSDRkT19wS1NHWUNyU0NVVVcyNEEyQzFZSFc4QVE0QWlyakdiQTVUMUx5MzBNX1hFRnlob3J0d3JnV2ZHeUtxUG5TOWMzNjVjSjJLQVg2WWV4Skx1V2szdlg4UTk1SHNxLUxEWVkxUU1LUTVPNVdpN0RvMXFpSQ?oc=5">Goldman Sachs (GS) Stock Looks Cheap Based On Excess Returns - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Mon, 09 Nov 2026 15:09:35 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxOb0FmeHhJNVN0OGVjWXcybGlRQWZqOFk2WWxaZ0RkdzVFeExma1hZM09Ca1NfZElQX0lQcGlxTWR1clo0UGhWQXpRMzVia0hYY1l0MlZvSnV6cnNVTHJfZ3NOOFRkb2JrQnBuZ0oxY3pGT3dLZ0U4QzZCcEVsSkNOcUhXdnVaREsy?oc=5">Goldman Sachs Group Inc Stock (GS) Moved Up by 4.60% on Nov 9: Drivers Behind the Movement - TradingKey</a></td>
+                <td data-label="Source" class="small">TradingKey</td>
+                <td data-label="Published" class="small">Mon, 09 Nov 2026 19:15:55 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMikAFBVV95cUxNMXhwX0lIc0xEN2liaS1fNGZrS09hQUt0ZzNuVktJUkFPMGNsa3NvNEg0c1hIb0h4bERxeTBlY2ZIVE1xakI0cGI3QlhNM2pDUXNXREVtZmpTOVRyeWR4ZlJaU2E3YmJUUWtpcUpDdTBjZXIySVVEck84MXZBenE0TjdaZUdBbUlCSU8ta3AwcnY?oc=5">AI Is Becoming a Stock Picker’s Market - Goldman Sachs</a></td>
+                <td data-label="Source" class="small">Goldman Sachs</td>
+                <td data-label="Published" class="small">Fri, 02 Oct 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMikAFBVV95cUxONWR4c0JRbEtRNmM1RlpUWHA1Tmxld3N5RGRyYmhhNTZxMjhpRGJIQmpGdUI1WnpIeEtCX3huN0VZTHBta0lCdEVlUlFHTkNBcFBSSUtKck42ZlQ4Uno1NWRGVldYcTYzQ2hrMzIxSDdCTl9UTGtiLTQwbF8zQkpHd2xvVFJMSEdsOVBrWUluMHE?oc=5">How Investors Are Reacting To Goldman Sachs Stock After Congress Shift - Yahoo Finance Australia</a></td>
+                <td data-label="Source" class="small">Yahoo Finance Australia</td>
+                <td data-label="Published" class="small">Sat, 07 Nov 2026 17:11:44 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOVkpvdEVqQzRGYUlBMVZZaVZsd3haXzVwRDhTSWJPWjhBVFd4b3k5a2FvUzdEbUhCR3RDOWtsb0djZjRJa0pwdW5RQjVnN01GUlR3UE5KOE9WYXVZOWYxdE9NdHgyT1dXbm9LVGlVYWR2SnFBaUZtTk15YXJKSEtNeDBSRHB6emdLYTMyM1FpN0R5cE1CT3RvOA?oc=5">Goldman Sachs (GS) Stock Still Looks Reasonable On Its 223% Run - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Sat, 24 Oct 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilAFBVV95cUxPd21WTV9HY2s1UzRDU0x4RTAyZ1BPODlyQVFUX1YwVUZtU0pvRnpxQjcyMkdMN3lXQnVwSlk4ckVYVlJoT3RqWWxLQTdXdjRMcUVmVjYzVWJ3RkxhODBtZFROZG9rNE5HRGM0N2NUTW1xWTlJNnZaMDRkVXZOTzZPQ21Bb0FFZkp0YnVBLVhzOHhSc1hw?oc=5">ETFs Bought $108.5 Million of Goldman Sachs (GS) on Nov. 4 - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 06 Nov 2026 11:00:45 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxNRTBUeExPVUJJTnNxV2g4emJmUFBzd29fdnRTUWdCUXVlLUI3RmZ2UXVUVGl3N00zVWJneUxvcjQtYUEyX3ZpMlhVSG5JX1RGT1QwY3ZrTkJ1TTlfdjFuR3VZWXB0S21HeGYyem5fV2lMSWYxRWJXWWZfQnlhTEE4cnlJX2dLNU1MUmxqdGE5ajlYSnF2RVItbg?oc=5">Goldman Sachs (GS) Stock Could Be Undervalued After A 204% Run - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 25 Sep 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilgFBVV95cUxQbGVrZndJWG1fOHppSzEtUHpYTFk0NXRzcDh1NTExVXg3dDFzUnBEMEpmWXNuaXhVa09CUlFDNnl6dGtPTTdoQWFVQ1ZHdU50RXZyX3YzV3UteURFWXNTVmNYbFlHMzlNS3hhS0h5QjkwX1kyeFRIcEQ1MlBUQmUwNzR0QUZsbV9oWEtQQ3I1MllRQlpFWlE?oc=5">Goldman Sachs (GS) Stock May Be A Bargain On Earnings But Fairly Valued Overall - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Tue, 11 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMinAFBVV95cUxOb09NcHZFU2pSRlBDLWhjY2J0aHBzdm9oNWR0Mll0WEM2NHg4WVExa011R0YtMTVBM25YOHBmU1lfYTF6RmxmSlJKVlg4UUVqQUtGZzVpeUowVHRIZkt6ZW15bmtHLURkN0FVT2Ryc0QtQ2hLcFJydEgwZ0s4UlZkN2ZOc0tXTDl0ZGliR3JDLWkzb1BCbnNBeWNMbm0?oc=5">A $10,000 Investment in Goldman Sachs in 2016 Is Now Worth More Than $60,000. Its Record Revenue This Year Says the Run Isn&#39;t Over. - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Thu, 05 Nov 2026 08:50:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMizAFBVV95cUxNcmxlUno5cjFTeXJ6cGNuZWE0ZVNrUnlPSEdaV09uTVlIVjVYRUZBWTJGR1NwWHNKM3JpampURE5rU0I4X3FvWTh0cW44ZjlIOWN0N2hXZHZpM2huazRLcjBfRk1IT1c5YkhhR01iWExhNmFXZ1FoaXRHeVVEdG1XX2FSaUpmX29ZcUFCSkRLUWM0M0dkS0t6dHNqX09GR0VqM2xCUWR1N3BVY0pzU1VpOUJUajdWanY1Qjc5c0ZaOUxzMjJseXNEcEtsbTQ?oc=5">Goldman’s stock edges towards 2026 flatline ahead of earnings - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Thu, 08 Oct 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilgFBVV95cUxNaXNDZ3hPRHFESDhjengxTTl5S0tDd0ZfTEo2dmNRVzNkOXExbU5CRUxNcEZFZE1wbFY2NmJGM0FBSXI0SzUxWjFCMnhpejlmdklrRUJnSUtVaTR4UjBjdjFQMmRfNlVkVFFtWGstaG9EM3F4WE0zODZFdmIzU2FDdVQ4S2o0V0NFU2F2dzBsaGk4Nl93RHc?oc=5">Goldman Sachs (GS) Stock May Be 17% Undervalued Following CEO Succession Talk - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 09 Oct 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxNTDZRZ1NEWUJxRVJHOTU4QlppZ3VpMnFnTlVXb0ExRzJtRWVwakZqQ016WnZkSE53WmFmY0Exd2F0bk1hVVN3LTVBdVlRRTZKRW9VVUltejdVUHlqUVd0MGlpVktqYll3cGFVSG1WYVdWYk1ic25DT1d1cUptRG0wdTBzazlKZEdpcF9Jd3dmVmlLYnF5U2VQOA?oc=5">Goldman Sachs (GS) Stock Looks Fairly Priced On Value But Cheap On Earnings - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Tue, 25 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOaXV4S2xhV2xKd1YwbjRFbjV4V1NvZFBrOW1nRWVfRE9sYXF6VmZuMk5kVFFNMWlvRlpSbGo4WENOYkdQQkZzTzdQVUFKUy1XV2JYR2JiNHpOLVpMejBrdkNBQ2pFTVZNR2pQVGNDQ3YxTXRYSjQ3dm9vN24zeHM0clZVNjJ2cXdDdGNiNHhSMG43Q09GZnNoQw?oc=5">Goldman Sachs (GS) Stock Sinks As Market Gains: What You Should Know - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Wed, 19 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxNN0pZZjVFQXRubm5KWkJrcWxFVGdWeXJXaXhGaGlzelJXQ1RhMlJNeFM0NFkxemktXzVGSklsQ3BrbW1LMlVTb0ZBOGtuY0lmT3BNU0hGVTVpbUI4dWh1eGxTSUlCXzNYOEJUZGFINjVNMFdFdHI2MHNJVzNpSGxBeWZDNWFhQkRheHM3d1NNODZzcFJ6dUFJRg?oc=5">Is The Goldman Sachs Group (GS) Stock Outpacing Its Finance Peers This Year? - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Mon, 24 Aug 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxNRG9mN092VlZiZzBRbEI3cVI0Y3ptNEs1M0xhREdDbTFaOWRuMVRNajhwVElrXzRpamRFZm5MNzlRWjBrVTlTbDZPMV9VSkJqazRNdVpJUl9EZFNpa1pPdmV3bnY5UzI3dHRvSURWT1BrVkh3X0VJNk8xTTJuN3BDXzdUVEduTmFRUHg0bWktSXc5aWM1S1JsS1pB?oc=5">Goldman Sachs (GS) Stock After Strong 1‑Year Rally Is The Price Still Justified - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 19 Jun 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilgFBVV95cUxOZjdmTlBlblhjQVRtMEh1Qkh3T3I5Mk9BcFBlSkNXcEt1LWdxLVE3enl3WTRxdTl3RUx6eUh4Z3pFWDNqTGNrdlY5Qm1acUZZOU12WU5URFNqZVcwbWZicm16OVA2bU1kdVpvcVRtN2c0QWkyZ19FR21GR0FMSF9aM0tfWEY4U3dKSXhQenpBbG5WZF9Sc2c?oc=5">Why Goldman Sachs (GS) Stock Is Trading Up Today - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 12 Jun 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMilwFBVV95cUxNNFdjV1Y0OGdJYWYxSjUtUHI1WXFwYzZFTFI0Zm9TNUZiTmgyNnE5djR2MUxMSklmMWZkUlNHZ3paYm5nZWtnZTJyUHpQZTNUV0xQTEFreHdiMlpEVnhQR1BmWEdraTZvOFJvdF9NVG5QZ3pfRGRWdnRiTmtQekpsckx4ZThQSmMwVXFxVFNPUlBYZVlJSlFN?oc=5">Learn Why The Bull Case For Goldman Sachs Stock Could Change Following Earnings Beat - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Fri, 16 Oct 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxQYzdENUkzVGlEQ0pETW1RMklkYTJqYjB2Z3hJZnhvQlQ5YjdOZDNoaXBRakRZZm92Rzg4TENOS2hPbE8wMjV4M0lVQ1BPMUhOM2t4cHJVX0xXaU1uZE1CTEljbXJxdHp3QlVFaXhJTWhVOTdJbWhoSWp2LXBtTjBudFJnMjlBOUtrNVJoeXlTUVpxZDdwMXlPU0VR?oc=5">Goldman Sachs (GS) Stock Trades Up, Here Is Why - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Tue, 14 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMixwFBVV95cUxPVllDSnVSRWQ3TkZqT09SLWRJeGU4aGtWWWpvdlZmZ25laEFaZTJQY0JWUEpGOE1iUzFEU2VGUFl3MHFROU1XMDRwaDgxQ2I4QUpJdWp1aXJ2OTVBNmRwNzhjOHpsQ0ZiT3o1UW9NZjVzUmhHLW1paGFZYUlWbzVYR24yVkxPRk5YaGRGLUl0bkc2YkcxN1Iyb1l0VXctRFVzbmk3Wm91YXAzbzIzNkU1REE4eWJDTWtHYUtTa1lLdFlveU56X3J3?oc=5">If You Invested $100 In Goldman Sachs Group Stock 5 Years Ago, You Would Have This Much Today - Benzinga</a></td>
+                <td data-label="Source" class="small">Benzinga</td>
+                <td data-label="Published" class="small">Fri, 06 Nov 2026 20:45:20 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxQdEgwVTZiaks2TFJjaTlRNDc2VjduaUtMRnN5OFpTRHZRT2stQ05ScVVsQ3M3SjV5eWlibk9IYjhEMWxySHdOM3JRLUNqa0hmS1prdmNIX05VMTFla3pVVjF4c1RMR1NqNHBKNktGMDNJeDZfRmJWSnVCM1A4M0ZwSEtIN2JMcEtveDQwYnZLM0U1NWNBekI5VA?oc=5">Goldman Sachs (GS) Stock Could Trade At A Premium Following AI Rotation Warning - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Sat, 04 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMiogFBVV95cUxNVm1LUGF1eHpVcVlORmRMWHlrS0x4My1FQ2lldWdQUHlxMXFTMkRSQlJUVzA5UDROeDdfNkpIVENuUUxGeFVSdlhnMHFBOVU4T0YzUnNNeC1HQ1lWaFdGZzJsemRMREdRR1Uzc0RrUnFTbWo1SnE1RDhGdVZnX0RZdG50XzVadGhZVkhZOTBCcWtURVpmNGpWV3VrSk96NnIyYkE?oc=5">Are US Stock Market Valuations Outpacing Fundamentals? - Goldman Sachs</a></td>
+                <td data-label="Source" class="small">Goldman Sachs</td>
+                <td data-label="Published" class="small">Fri, 10 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxONFFZMzkzYl93SEYyRFk2M01aanlwb3kwMnZFR2R6dmpnSW02a1FhU0ZZcUQzVkZXN0ZYcV9mSWVhRWNXNzBaTjN5dmt5T2dmUGdFWkJFSnAycURzT0txbUJoR3N3MHJmYy1iVnFkM0k5Q19NU0dSRVNsTnAxZWNoMlJhLUFPejNRWi01TjlORl9uYWxWNVRLVw?oc=5">Goldman Sachs (GS) Stock Looks Near Fair Value After A 217% Run - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Tue, 21 Jul 2026 07:00:00 GMT</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Headline"><a target="_blank" rel="noopener" href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOcUc1SXJwWTFXRkh1YU5LbHhRdDZIYVpNdllKaFQyWm54VF90bGt3dnl6cUZqTXpWdG1FTnRmNjJfN19FZFVtcG1zYWI1OUd3TGFhSVlSSEtSM2YwbFFvREszZVU1c3Fjc1BabUYtbXlPVFc2aXNxRW5FX2VCTHg2bmFsV1VvYXBzNndoMlFkRXltczNDSWwxWA?oc=5">Goldman Sachs (GS) Stock Moves -1.08%: What You Should Know - Yahoo Finance</a></td>
+                <td data-label="Source" class="small">Yahoo Finance</td>
+                <td data-label="Published" class="small">Tue, 23 Jun 2026 07:00:00 GMT</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <div class="small">Total 25 items · avg tone: positive</div>
+    </section>
+
+    <section id="social" class="sect">
+      <h3>💬 Social Buzz</h3>
+      <div class="table-scroll">
+        <table class="tbl rtable">
+          <thead><tr><th>Mentions</th><th>Engagement</th><th>Avg Sentiment</th></tr></thead>
+          <tbody>
+            <tr>
+              <td data-label="Mentions">0</td>
+              <td data-label="Engagement" class="small">0</td>
+              <td data-label="Avg Sentiment" class="small">neutral</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- congress -->
+    <section id="congress" class="sect">
+      <h3>🏛 Congressional Trading</h3>
+      <div class="small">Last activity: 2026-10-20 · Buys 3 / Sells 0</div>
+      <div class="table-scroll" style="margin-top:8px">
+        <table class="tbl rtable">
+          <thead><tr><th>Member</th><th>Chamber/Party</th><th>Type</th><th>Traded</th><th>Filed</th><th>Amount</th></tr></thead>
+          <tbody>
+            
+              <tr>
+                <td data-label="Member">Dave McCormickRepublicanSenatePA</td>
+                <td data-label="Chamber/Party" class="small">Senate</td>
+                <td data-label="Type" class="small">Buy</td>
+                <td data-label="Traded" class="small">2026-10-20</td>
+                <td data-label="Filed" class="small">None</td>
+                <td data-label="Amount" class="small">250K–500K</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Member">Dave McCormickRepublicanSenatePA</td>
+                <td data-label="Chamber/Party" class="small">Senate</td>
+                <td data-label="Type" class="small">Buy</td>
+                <td data-label="Traded" class="small">2026-10-14</td>
+                <td data-label="Filed" class="small">None</td>
+                <td data-label="Amount" class="small">100K–250K</td>
+              </tr>
+            
+              <tr>
+                <td data-label="Member">Dave McCormickRepublicanSenatePA</td>
+                <td data-label="Chamber/Party" class="small">Senate</td>
+                <td data-label="Type" class="small">Buy</td>
+                <td data-label="Traded" class="small">2026-10-07</td>
+                <td data-label="Filed" class="small">None</td>
+                <td data-label="Amount" class="small">250K–500K</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- agents & scenarios -->
+    <section id="agents" class="sect">
+      <h3>🤝 Final Verdict &amp; Agent Playbooks</h3>
+
+      <div class="card host">
+        <b>Host Decision:</b>
+        <span class="pill">BUY</span>
+        <span class="chip">conf 0.81</span>
+        <span class="muted">Goldman Sachs (GS) shows a strong overall outlook supported by financial metrics, positive sentiment, and option indicators, despite mixed technical signals.</span>
+      </div>
+
+      <div class="grid-3" style="margin-top:12px">
+        
+      </div>
+    </section>
+
+    <!-- sources -->
+    <!-- <section id="sources" class="sect">
+      <h3>📚 Data Sources</h3>
+      <div class="table-scroll">
+        <table class="tbl">
+          
+            <tr><td>price</td><td class="small">Alpha Vantage API</td></tr>
+          
+            <tr><td>quant</td><td class="small">Calculated from OHLCV data</td></tr>
+          
+            <tr><td>options</td><td class="small">Finnhub Option Chain API</td></tr>
+          
+            <tr><td>short</td><td class="small">Fintel + FINRA data</td></tr>
+          
+            <tr><td>congress</td><td class="small">House/Senate trading disclosures</td></tr>
+          
+            <tr><td>news</td><td class="small">Google News RSS</td></tr>
+          
+            <tr><td>social</td><td class="small">StockTwits/Reddit APIs</td></tr>
+          
+            <tr><td>forecast</td><td class="small">IV &amp; ATR model (compute_anticipated_price)</td></tr>
+          
+            <tr><td>chart</td><td class="small">Plotly via render_price_chart</td></tr>
+          
+            <tr><td>template</td><td class="small">report_v4_pro.html</td></tr>
+          
+        </table>
+      </div>
+      <div class="small">This material is not investment advice.</div>
+    </section>
+  </div> -->
+
+  <script>
+    // theme toggle (persisted)
+    (function(){
+      const btn = document.getElementById('themeBtn');
+      const get = () => localStorage.getItem('theme') || 'light';  // 기본 light
+      const set = t => { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); };
+      set(get());
+      btn && (btn.onclick = () => set(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    })();
+
+    // 모바일에서 "해설 & 토론" 섹션을 KPI 위로 이동 (내용은 그대로, 위치만 변경)
+    (function(){
+      const debate = document.getElementById('explain-debate');
+      const kpi = document.getElementById('kpi');
+      if (!debate || !kpi) return;
+      const originalParent = debate.parentNode;
+      const nextSibling = debate.nextElementSibling;
+
+      function placeMobile(){
+        const isMobile = window.matchMedia('(max-width: 860px)').matches;
+        if (isMobile){
+          if (debate.previousElementSibling !== kpi.previousElementSibling) {
+            kpi.parentNode.insertBefore(debate, kpi);   // KPI 앞에 배치
+          }
+        } else {
+          // 데스크탑에서는 원래 위치로 복귀
+          if (nextSibling) originalParent.insertBefore(debate, nextSibling);
+          else originalParent.appendChild(debate);
+        }
+      }
+      window.addEventListener('resize', placeMobile);
+      document.addEventListener('DOMContentLoaded', placeMobile);
+      placeMobile();
+    })();
+  </script>
+  <script>
+  /* ====== Scrape Guard (우클릭/복사/드래그 차단) ======
+    - PROTECT: 전체 보호 ON/OFF
+    - BLOCK_KEYS: Ctrl/Cmd + C / X / S / P / U / A 차단
+    - 차트/링크/버튼/폼 요소는 예외 처리
+  */
+  (function(){
+    const PROTECT   = false;   // 보호 켜기/끄기
+    const BLOCK_KEYS= false;   // 단축키 차단(복사/인쇄 등)
+    const SCOPE     = document.getElementById('content-root'); // 리포트 래퍼
+
+    if (!SCOPE) return;
+    if (PROTECT) SCOPE.classList.add('protect');
+
+    const isEditable = (el) => {
+      const tag = (el && el.tagName || '').toLowerCase();
+      return /(input|textarea|select)/.test(tag) || (el && el.isContentEditable);
+    };
+
+    // 우클릭 메뉴 차단
+    document.addEventListener('contextmenu', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 텍스트 블록 선택 차단
+    document.addEventListener('selectstart', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 드래그 차단 (이미지/텍스트 드래그)
+    document.addEventListener('dragstart', (e)=>{
+      if (!PROTECT) return;
+      if (!isEditable(e.target)) e.preventDefault();
+    }, {capture:true});
+
+    // 흔한 단축키 차단 (옵션)
+    if (BLOCK_KEYS){
+      document.addEventListener('keydown', (e)=>{
+        if (!PROTECT) return;
+        const k = (e.key||'').toLowerCase();
+        // Ctrl/Cmd + C/X/S/P/U/A (복사/잘라내기/저장/인쇄/소스보기/전체선택)
+        if ((e.ctrlKey || e.metaKey) && ['c','x','s','p','u','a'].includes(k)){
+          // 입력필드에서만 허용
+          if (!isEditable(e.target)) e.preventDefault();
+        }
+      }, {capture:true});
+    }
+  })();
+  </script>
+</body>
+</html>
